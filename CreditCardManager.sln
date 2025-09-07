@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreditCardManager", "./CreditCardManager.API/CreditCardManager.csproj", "{8A792B9F-A824-E4A0-118E-8E1398FE347A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreditCardManager.API.Tests", "CreditCardManager.API.Tests\CreditCardManager.Tests.csproj", "{6FEDBA82-66A5-49AC-A256-7422091A5F93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Debug|x86.Build.0 = Debug|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|x64.Build.0 = Release|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|x86.ActiveCfg = Release|Any CPU
+		{8A792B9F-A824-E4A0-118E-8E1398FE347A}.Release|x86.Build.0 = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|x64.Build.0 = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|x64.ActiveCfg = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|x64.Build.0 = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FEDBA82-66A5-49AC-A256-7422091A5F93}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C379E255-53F2-434C-9A5E-7307B789B76A}
+	EndGlobalSection
+EndGlobal
