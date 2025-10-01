@@ -5,7 +5,11 @@ namespace CreditCardManager.DTOs
     public record UserDTO
     {
         public int Id { get; init; }
+
+        [Required(ErrorMessage = "UserName is required.")]
         public string UserName { get; init; } = default!;
+        
+        [Required(ErrorMessage = "UserName is required.")]
         public string Email { get; init; } = default!;
     }
 

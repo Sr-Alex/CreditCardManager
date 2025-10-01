@@ -83,7 +83,7 @@ namespace CreditCardManager.Services
         {
             if (EmailAlreadyExists(createDTO.Email))
             {
-                throw new Exception("User already exists.");
+                throw new InvalidOperationException("User already exists.");
             }
 
             UserModel user = new()

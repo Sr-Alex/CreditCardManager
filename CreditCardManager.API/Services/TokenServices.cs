@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using CreditCardManager.DTOs;
 using CreditCardManager.Interfaces;
+using CreditCardManager.Validators;
 
 namespace CreditCardManager.Services
 {
@@ -50,7 +51,12 @@ namespace CreditCardManager.Services
 
         public string GenerateUserToken(UserDTO userDTO)
         {
-            var secureKey = _config["JWT:SecureKey"];
+            if (ModelStateValidator.Validate(userDTO).Count != 0)
+            {
+                throw new InvalidDataException("Invalid user data.");
+            }
+
+            var secureKey = _config.GetSection("JWT").GetValue<string>("SecureKey");
             if (string.IsNullOrEmpty(secureKey))
             {
                 throw new InvalidOperationException("Secure key configuration is missing.");
@@ -62,8 +68,8 @@ namespace CreditCardManager.Services
             );
 
             JwtSecurityToken jwt = _JWThandler.CreateJwtSecurityToken(
-                issuer: _config["JWT:ValidIssuer"],
-                audience: _config["JWT:ValidAudience"],
+                issuer: _config.GetSection("JWT").GetValue<string>("ValidIssuer"),
+                audience: _config.GetSection("JWT").GetValue<string>("ValidAudience"),
                 subject: GenerateUserClaims(userDTO),
                 expires: DateTime.Now.AddHours(8),
                 signingCredentials: credentials

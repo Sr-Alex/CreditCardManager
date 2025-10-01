@@ -1,5 +1,8 @@
 .vscode
+
 */obj
 */bin
 
 CreditCardManager.API/Migrations
+
+*/appsettings.Development.json
