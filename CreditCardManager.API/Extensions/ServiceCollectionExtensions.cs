@@ -12,27 +12,38 @@ namespace CreditCardManager.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
+            var frontendUrl = config["FrontendUrl"];
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins(frontendUrl ?? "")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .SetIsOriginAllowed(_ => true);
+                });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = config["JWT:ValidIssuer"],
-            ValidAudience = config["JWT:ValidAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                config["JWT:SecureKey"] ?? ""
-            ))
-        };
-    });
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = config["JWT:ValidIssuer"],
+                    ValidAudience = config["JWT:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                        config["JWT:SecureKey"] ?? ""
+                    ))
+                };
+            });
 
             services.AddTransient<ITokenServices, TokenServices>();
 
