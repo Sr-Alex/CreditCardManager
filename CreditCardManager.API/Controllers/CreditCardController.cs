@@ -32,7 +32,7 @@ namespace CreditCardManager.Controllers
             return Ok(cards);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("details/{id}")]
         public IActionResult GetCreditCard(int id)
         {
             CreditCardDTO? card = _creditCardServices.GetCreditCard(id);
@@ -43,7 +43,7 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}/users")]
+        [HttpGet("details/{id}/users")]
         public IActionResult GetCreditCardUsers(int id)
         {
             try
@@ -59,7 +59,7 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpPost("{id}/users")]
+        [HttpPost("details/{id}/users")]
         public IActionResult AddUser(int id, [FromBody] int userId)
         {
             string authorization = Request.Headers.Authorization.ToString();
