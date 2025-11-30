@@ -62,8 +62,8 @@ namespace CreditCardManager.Controllers
 
                 return Created("Created", new
                 {
-                    Message = "User created successfully",
-                    token = _tokenServices.GenerateUserToken(user)
+                    token = _tokenServices.GenerateUserToken(user),
+                    user
                 });
             }
             catch (Exception ex)
@@ -82,10 +82,10 @@ namespace CreditCardManager.Controllers
 
             try
             {
-                UserDTO result = _userServices.Login(loginDTO);
-                string token = _tokenServices.GenerateUserToken(result);
+                UserDTO user = _userServices.Login(loginDTO);
+                string token = _tokenServices.GenerateUserToken(user);
 
-                return Ok(new { token });
+                return Ok(new { token, user });
             }
             catch (Exception)
             {
