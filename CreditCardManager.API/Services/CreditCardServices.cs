@@ -69,16 +69,17 @@ namespace CreditCardManager.Services
         public bool CreateCreditCard(CreateCreditCardDTO createDTO)
         {
             bool userExists = _userServices.UserIdExists(createDTO.UserId);
-
-            if (!userExists) throw new Exception("This user does not exist.");
-
-            EntityEntry<CreditCardModel> card = _context.CreditCards.Add(new CreditCardModel
+            CreditCardModel createCard = new()
             {
                 UserId = createDTO.UserId,
                 CardName = createDTO.CardName,
                 ExpiresAt = createDTO.ExpiresAt,
                 Limit = createDTO.Limit
-            });
+            };
+
+            if (!userExists) throw new Exception("This user does not exist.");
+
+            EntityEntry<CreditCardModel> card = _context.CreditCards.Add(createCard);
 
             _cardUserServices.CreateCardUser(new()
             {
