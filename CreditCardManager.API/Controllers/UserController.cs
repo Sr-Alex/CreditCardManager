@@ -92,6 +92,28 @@ namespace CreditCardManager.Controllers
                 return Unauthorized(new { Message = "Invalid email or password" });
             }
         }
+
+        [Authorize]
+        [HttpDelete]
+        public IActionResult DeleteUser()
+        {
+            string Authorization = Request.Headers.Authorization.ToString();
+
+            try
+            {
+                UserDTO user = _tokenServices.DecodeUserToken(Authorization);
+
+                if (!_userServices.UserIdExists(user.Id)) return NotFound("User not found.");
+
+                _userServices.Delete(user.Id);
+            }
+            catch (System.Exception ex)
+            {
+                return Unauthorized(new { ex.Message });
+            }
+
+            return NoContent();
+        }
     }
 
 }

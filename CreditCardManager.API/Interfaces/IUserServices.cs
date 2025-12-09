@@ -11,5 +11,6 @@ namespace CreditCardManager.Interfaces
 
         UserDTO Login(LoginUserDTO loginDTO);
         UserDTO Create(CreateUserDTO userDTO);
+        void Delete(int id);
     }
 }

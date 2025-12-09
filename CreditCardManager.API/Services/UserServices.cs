@@ -4,6 +4,7 @@ using CreditCardManager.Data;
 using CreditCardManager.Models;
 using CreditCardManager.DTOs;
 using CreditCardManager.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CreditCardManager.Services
 {
@@ -104,6 +105,16 @@ namespace CreditCardManager.Services
                 UserName = user.UserName,
                 Email = user.Email
             };
+        }
+
+        public void Delete(int id)
+        {
+            if (!UserIdExists(id)) throw new Exception("User id not found.");
+
+            UserModel user = _context.Users.First(u => u.Id == id);
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
     }
 }

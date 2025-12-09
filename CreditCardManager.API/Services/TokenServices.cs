@@ -23,7 +23,7 @@ namespace CreditCardManager.Services
 
         public UserDTO DecodeUserToken(string JWTtoken)
         {
-            string bearerPrefix = "bearer ";
+            const string bearerPrefix = "bearer ";
 
             if (JWTtoken.Trim().StartsWith(bearerPrefix))
             {
