@@ -9,7 +9,7 @@ namespace CreditCardManager.Interfaces
         List<CreditCardDTO> GetUserCreditCards(int userId);
         CardUsersDTO GetUsers(int cardId);
         bool AddUser(int cardId, int userId);
-        bool CreateCreditCard(CreateCreditCardDTO creditCardDTO);
+        CreditCardDTO CreateCreditCard(CreateCreditCardDTO creditCardDTO);
         bool DeleteCreditCard(int cardId);
     }
 }

@@ -66,9 +66,10 @@ namespace CreditCardManager.Services
             return cards;
         }
 
-        public bool CreateCreditCard(CreateCreditCardDTO createDTO)
+        public CreditCardDTO CreateCreditCard(CreateCreditCardDTO createDTO)
         {
             bool userExists = _userServices.UserIdExists(createDTO.UserId);
+            
             CreditCardModel createCard = new()
             {
                 UserId = createDTO.UserId,
@@ -87,7 +88,17 @@ namespace CreditCardManager.Services
                 UserId = card.Entity.UserId
             });
 
-            return true;
+            _context.SaveChanges();
+
+            return new CreditCardDTO
+            {
+                Id = card.Entity.Id,
+                CardName = card.Entity.CardName,
+                ExpiresAt = card.Entity.ExpiresAt,
+                Invoice = card.Entity.Invoice.ToString(),
+                Limit = card.Entity.Limit.ToString(),
+                UserId = card.Entity.UserId
+            };
         }
 
         public bool DeleteCreditCard(int cardId)

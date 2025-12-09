@@ -100,15 +100,13 @@ namespace CreditCardManager.Controllers
                 UserDTO userToken = _tokenServices.DecodeUserToken(authorization);
                 creditCardDTO.UserId = userToken.Id;
 
-                bool result = _creditCardServices.CreateCreditCard(creditCardDTO);
+                CreditCardDTO result = _creditCardServices.CreateCreditCard(creditCardDTO);
 
-                return result
-                    ? Created("Created", new { Message = "Credit Card created successfully" })
-                    : NotFound();
+                return Created("CreditCard", result);
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex.Message);
+                return NotFound(ex.Message);
             }
         }
 
