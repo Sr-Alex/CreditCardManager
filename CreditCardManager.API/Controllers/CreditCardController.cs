@@ -12,10 +12,12 @@ namespace CreditCardManager.Controllers
     {
         private readonly ICreditCardServices _creditCardServices;
         private readonly ITokenServices _tokenServices;
+        private readonly ICardUserServices _cardUserServices;
 
-        public CreditCardController(ICreditCardServices creditCardServices, ITokenServices tokenServices)
+        public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices)
         {
             _creditCardServices = creditCardServices;
+            _cardUserServices = cardUserServices;
             _tokenServices = tokenServices;
         }
 
@@ -46,16 +48,13 @@ namespace CreditCardManager.Controllers
         [HttpGet("details/{id}/users")]
         public IActionResult GetCreditCardUsers(int id)
         {
-            try
+            if (!_creditCardServices.CardIdExists(id))
             {
-                CardUsersDTO result = _creditCardServices.GetUsers(id);
-                return Ok(result);
+                return NotFound("This credit card does not exist.");
+            }
 
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            CardUsersDTO result = _cardUserServices.GetCardUsers(id);
+            return Ok(result.Users);
         }
 
         [Authorize]

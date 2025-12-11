@@ -82,7 +82,7 @@ namespace CreditCardManager.Services
 
             EntityEntry<CreditCardModel> card = _context.CreditCards.Add(createCard);
 
-            _cardUserServices.CreateCardUser(new()
+            _cardUserServices.CreateCardUser(new CreateCardUserDTO
             {
                 CardId = card.Entity.Id,
                 UserId = card.Entity.UserId
@@ -125,17 +125,6 @@ namespace CreditCardManager.Services
             _context.SaveChanges();
 
             return card.Invoice;
-        }
-
-        public CardUsersDTO GetUsers(int cardId)
-        {
-            bool cardExists = CardIdExists(cardId);
-
-            if (!cardExists) throw new Exception("This credit card does not exist.");
-
-            CardUsersDTO cardUsers = _cardUserServices.GetCardUsers(cardId);
-
-            return cardUsers;
         }
 
         public bool AddUser(int cardId, int userId)

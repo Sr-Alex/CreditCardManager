@@ -34,12 +34,17 @@ namespace CreditCardManager.Services
 
         public CardUsersDTO GetCardUsers(int cardId)
         {
-            List<UserDTO> users =
-                (from cardU in _context.CardUsers
-                 join user in _context.Users on cardU.UserId equals user.Id
-                 where cardU.CardId == cardId
-                 select new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName }
-                ).ToList();
+            List<UserDTO> users = _context.CardUsers
+                .Join(_context.Users,
+                cardU => cardU.UserId,
+                user => user.Id,
+                (cardU, user) => new UserDTO
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList();
+
 
             CardUsersDTO cardUsers = new()
             {
