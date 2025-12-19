@@ -9,13 +9,15 @@ namespace CreditCardManager.Controllers
     [Route("[controller]")]
     public class DebtController : ControllerBase
     {
-        private readonly IDebtServices _debtServices;
         private readonly ITokenServices _tokenServices;
+        private readonly IDebtServices _debtServices;
+        private readonly ICreditCardServices _creditCardServices;
 
-        public DebtController(IDebtServices debtServices, ITokenServices tokenServices)
+        public DebtController(ITokenServices tokenServices, IDebtServices debtServices, ICreditCardServices creditCardServices)
         {
-            _debtServices = debtServices;
             _tokenServices = tokenServices;
+            _debtServices = debtServices;
+            _creditCardServices = creditCardServices;
         }
 
         [HttpGet("{id}")]
@@ -29,6 +31,24 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public IActionResult GetCardDebts([FromQuery] int cardId, [FromHeader] string Authorization)
+        {
+            try
+            {
+                int userId = _tokenServices.DecodeUserToken(Authorization).Id;
+
+                if (!_creditCardServices.IsUserOwnerOfCard(cardId, userId)) return Unauthorized();
+            }
+            catch (System.Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            return Ok(_debtServices.GetCardDebts(cardId));
+        }
+
+        [Authorize]
         [HttpPost]
         public IActionResult CreateDebt([FromBody] CreateDebtDTO debtDTO, [FromHeader] string Authorization)
         {
@@ -36,7 +56,7 @@ namespace CreditCardManager.Controllers
 
             try
             {
-                UserDTO user = _tokenServices.DecodeUserToken(Authorization.Substring(7));
+                UserDTO user = _tokenServices.DecodeUserToken(Authorization);
                 debtDTO.UserId = user.Id;
             }
             catch (Exception ex)

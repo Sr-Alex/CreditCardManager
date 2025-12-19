@@ -97,11 +97,10 @@ namespace CreditCardManager.Controllers
         [HttpDelete]
         public IActionResult DeleteUser()
         {
-            string Authorization = Request.Headers.Authorization.ToString();
-
             try
             {
-                UserDTO user = _tokenServices.DecodeUserToken(Authorization);
+                string authorization = Request.Headers.Authorization.ToString();
+                UserDTO user = _tokenServices.DecodeUserToken(authorization);
 
                 if (!_userServices.UserIdExists(user.Id)) return NotFound("User not found.");
 

@@ -10,8 +10,8 @@ namespace CreditCardManager.Controllers
     [Route("[controller]")]
     public class CreditCardController : ControllerBase
     {
-        private readonly ICreditCardServices _creditCardServices;
         private readonly ITokenServices _tokenServices;
+        private readonly ICreditCardServices _creditCardServices;
         private readonly ICardUserServices _cardUserServices;
 
         public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices)
@@ -59,10 +59,10 @@ namespace CreditCardManager.Controllers
 
         [Authorize]
         [HttpPost("details/{id}/users")]
-        public IActionResult AddUser(int id, [FromBody] int userId)
+        public IActionResult AddUser(int id, [FromBody] int userId, [FromHeader] string Authorization)
         {
-            string authorization = Request.Headers.Authorization.ToString();
-            int userIdToken = _tokenServices.DecodeUserToken(authorization).Id;
+
+            int userIdToken = _tokenServices.DecodeUserToken(Authorization).Id;
 
             if (!_creditCardServices.IsUserOwnerOfCard(id, userIdToken))
                 return Unauthorized(new
@@ -85,10 +85,8 @@ namespace CreditCardManager.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult CreateCreditCard([FromBody] CreateCreditCardDTO creditCardDTO)
+        public IActionResult CreateCreditCard([FromBody] CreateCreditCardDTO creditCardDTO, [FromHeader] string Authorization)
         {
-            string authorization = Request.Headers.Authorization.ToString();
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -96,7 +94,7 @@ namespace CreditCardManager.Controllers
 
             try
             {
-                UserDTO userToken = _tokenServices.DecodeUserToken(authorization);
+                UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
                 creditCardDTO.UserId = userToken.Id;
 
                 CreditCardDTO result = _creditCardServices.CreateCreditCard(creditCardDTO);
@@ -111,9 +109,8 @@ namespace CreditCardManager.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public IActionResult DeleteCreditCard(int id)
+        public IActionResult DeleteCreditCard(int id, [FromHeader] string Authorization)
         {
-            string authorization = Request.Headers.Authorization.ToString();
             CreditCardDTO? card = _creditCardServices.GetCreditCard(id);
 
             if (card == null)
@@ -121,7 +118,7 @@ namespace CreditCardManager.Controllers
 
             try
             {
-                int userId = _tokenServices.DecodeUserToken(authorization).Id;
+                int userId = _tokenServices.DecodeUserToken(Authorization).Id;
                 if (userId != card.UserId)
                     return Unauthorized(new { Message = "You are not authorized to delete this credit card." });
             }

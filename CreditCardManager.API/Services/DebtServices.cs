@@ -44,8 +44,6 @@ namespace CreditCardManager.Services
 
         public DebtDTO? GetDebt(int debtId)
         {
-            DbSet<DebtModel> debts = _context.Debts;
-
             DebtDTO? debt = _context.Debts
                 .Where(debt => debt.Id == debtId)
                 .Select(debt => new DebtDTO
@@ -64,9 +62,21 @@ namespace CreditCardManager.Services
             return debt;
         }
 
-        public List<DebtDTO> GetDebts(int userId, int cardId)
+        public List<DebtDTO> GetCardDebts(int cardId)
         {
-            throw new NotImplementedException();
+            List<DebtDTO> debts = _context.Debts.Where(debt => debt.CardId == cardId)
+                .Select(
+                    debt => new DebtDTO
+                    {
+                        User = debt.UserId,
+                        Card = debt.CardId,
+                        Label = debt.Label,
+                        Value = debt.Value,
+                        Date = debt.Date
+                    }
+                ).ToList();
+
+            return debts;
         }
     }
 }
