@@ -61,7 +61,6 @@ namespace CreditCardManager.Controllers
         [HttpPost("details/{id}/users")]
         public IActionResult AddUser(int id, [FromBody] int userId, [FromHeader] string Authorization)
         {
-
             int userIdToken = _tokenServices.DecodeUserToken(Authorization).Id;
 
             if (!_creditCardServices.IsUserOwnerOfCard(id, userIdToken))
@@ -97,9 +96,15 @@ namespace CreditCardManager.Controllers
                 UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
                 creditCardDTO.UserId = userToken.Id;
 
-                CreditCardDTO result = _creditCardServices.CreateCreditCard(creditCardDTO);
+                CreditCardDTO card = _creditCardServices.CreateCreditCard(creditCardDTO);
 
-                return Created("CreditCard", result);
+                _cardUserServices.CreateCardUser(new CreateCardUserDTO
+                {
+                    CardId = card.Id,
+                    UserId = card.UserId
+                });
+
+                return Created("CreditCard", card);
             }
             catch (Exception ex)
             {

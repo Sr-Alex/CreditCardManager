@@ -38,7 +38,7 @@ namespace CreditCardManager.Controllers
             {
                 int userId = _tokenServices.DecodeUserToken(Authorization).Id;
 
-                if (!_creditCardServices.IsUserOwnerOfCard(cardId, userId)) return Unauthorized();
+                if (!_creditCardServices.IsCardUser(cardId, userId)) throw new Exception("User does not have access to this card's debts.");
             }
             catch (System.Exception e)
             {

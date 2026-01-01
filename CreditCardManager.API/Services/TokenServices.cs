@@ -71,7 +71,7 @@ namespace CreditCardManager.Services
                 issuer: _config.GetSection("JWT").GetValue<string>("ValidIssuer"),
                 audience: _config.GetSection("JWT").GetValue<string>("ValidAudience"),
                 subject: GenerateUserClaims(userDTO),
-                expires: DateTime.Now.AddHours(8),
+                expires: DateTime.Now.AddHours(24),
                 signingCredentials: credentials
             );
 

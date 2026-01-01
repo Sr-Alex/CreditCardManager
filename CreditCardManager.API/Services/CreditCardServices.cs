@@ -26,6 +26,11 @@ namespace CreditCardManager.Services
             return card != null && card.UserId == userId;
         }
 
+        public bool IsCardUser(int cardId, int userId)
+        {
+            return _context.CardUsers.Any(cardUser => cardUser.CardId == cardId && cardUser.UserId == userId);
+        }
+
         public bool CardIdExists(int cardId)
         {
             return _context.CreditCards.Any(c => c.Id == cardId);
@@ -69,7 +74,7 @@ namespace CreditCardManager.Services
         public CreditCardDTO CreateCreditCard(CreateCreditCardDTO createDTO)
         {
             bool userExists = _userServices.UserIdExists(createDTO.UserId);
-            
+
             CreditCardModel createCard = new()
             {
                 UserId = createDTO.UserId,
@@ -81,12 +86,6 @@ namespace CreditCardManager.Services
             if (!userExists) throw new Exception("This user does not exist.");
 
             EntityEntry<CreditCardModel> card = _context.CreditCards.Add(createCard);
-
-            _cardUserServices.CreateCardUser(new CreateCardUserDTO
-            {
-                CardId = card.Entity.Id,
-                UserId = card.Entity.UserId
-            });
 
             _context.SaveChanges();
 
