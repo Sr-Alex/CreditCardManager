@@ -47,10 +47,6 @@ namespace CreditCardManager.Extensions
 
             services.AddTransient<ITokenServices, TokenServices>();
 
-            services.AddDbContext<CreditCardManagerDbContext>(options =>
-                options.UseSqlServer(connectionString)
-            );
-
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
             {
