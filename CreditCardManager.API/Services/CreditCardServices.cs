@@ -75,6 +75,8 @@ namespace CreditCardManager.Services
         {
             bool userExists = _userServices.UserIdExists(createDTO.UserId);
 
+            if (!userExists) throw new Exception("This user does not exist.");
+
             CreditCardModel createCard = new()
             {
                 UserId = createDTO.UserId,
@@ -83,11 +85,14 @@ namespace CreditCardManager.Services
                 Limit = createDTO.Limit
             };
 
-            if (!userExists) throw new Exception("This user does not exist.");
-
             EntityEntry<CreditCardModel> card = _context.CreditCards.Add(createCard);
-
             _context.SaveChanges();
+
+            _cardUserServices.CreateCardUser(new CreateCardUserDTO
+            {
+                CardId = card.Entity.Id,
+                UserId = createDTO.UserId
+            });
 
             return new CreditCardDTO
             {
@@ -112,13 +117,14 @@ namespace CreditCardManager.Services
             return true;
         }
 
-
-        public decimal AddToInvoice(int cardId, decimal value)
+        public decimal UpdateInvoice(int cardId)
         {
             CreditCardModel? card = _context.CreditCards.FirstOrDefault(card => card.Id == cardId)
                 ?? throw new Exception("This Credit Card does not exist.");
 
-            card.Invoice += value;
+            card.Invoice = _context.Debts
+                .Where(debt => debt.CardId == cardId)
+                .Sum(debt => debt.Value);
 
             _context.CreditCards.Update(card);
             _context.SaveChanges();

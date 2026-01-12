@@ -7,5 +7,7 @@ namespace CreditCardManager.Interfaces
         DebtDTO? GetDebt(int debtId);
         List<DebtDTO> GetCardDebts(int cardId);
         bool CreateDebt(CreateDebtDTO debtDTO);
+        bool UpdateDebt(int debtId, UpdateDebtDTO debtDTO);
+        bool DeleteDebt(int debtId);
     }
 }

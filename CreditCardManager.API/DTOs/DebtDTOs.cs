@@ -5,8 +5,9 @@ namespace CreditCardManager.DTOs
 {
     public record DebtDTO
     {
-        public required int User { get; set; }
-        public required int Card { get; set; }
+        public int Id { get; set; }
+        public int User { get; set; }
+        public int Card { get; set; }
 
         public string Label { get; set; } = default!;
         public decimal Value;
@@ -29,5 +30,17 @@ namespace CreditCardManager.DTOs
         [Required(ErrorMessage = "Value is required.")]
         [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
         public decimal Value { get; set; }
+
+
+    }
+    public record UpdateDebtDTO
+    {
+        public string? Label { get; set; }
+
+        [OnlyPastDate]
+        public DateTime? Date { get; set; }
+
+        [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
+        public decimal? Value { get; set; }
     }
 }

@@ -35,9 +35,9 @@ namespace CreditCardManager.Services
                 Date = debtDTO.Date,
                 Value = debtDTO.Value
             });
-
-            _creditCardServices.AddToInvoice(debtDTO.CardId, debtDTO.Value);
             _context.SaveChanges();
+
+            _creditCardServices.UpdateInvoice(debtDTO.CardId);
 
             return true;
         }
@@ -48,6 +48,7 @@ namespace CreditCardManager.Services
                 .Where(debt => debt.Id == debtId)
                 .Select(debt => new DebtDTO
                 {
+                    Id = debt.Id,
                     Label = debt.Label,
                     Value = debt.Value,
                     Date = debt.Date,
@@ -68,6 +69,7 @@ namespace CreditCardManager.Services
                 .Select(
                     debt => new DebtDTO
                     {
+                        Id = debt.Id,
                         User = debt.UserId,
                         Card = debt.CardId,
                         Label = debt.Label,
@@ -77,6 +79,36 @@ namespace CreditCardManager.Services
                 ).ToList();
 
             return debts;
+        }
+
+        public bool UpdateDebt(int debtId, UpdateDebtDTO debtDTO)
+        {
+            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId);
+            if (debt == null) return false;
+
+            if (debtDTO.Label != null) debt.Label = debtDTO.Label;
+            if (debtDTO.Date.HasValue) debt.Date = debtDTO.Date.Value;
+            if (debtDTO.Value.HasValue) debt.Value = debtDTO.Value.Value;
+
+            _context.Debts.Update(debt);
+            _context.SaveChanges();
+
+            _creditCardServices.UpdateInvoice(debt.CardId);
+
+            return true;
+        }
+
+        public bool DeleteDebt(int debtId)
+        {
+            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId);
+            if (debt == null) return false;
+
+            _context.Debts.Remove(debt);
+            _context.SaveChanges();
+
+            _creditCardServices.UpdateInvoice(debt.CardId);
+
+            return true;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CreditCardManager.Controllers
         private readonly ICreditCardServices _creditCardServices;
         private readonly ICardUserServices _cardUserServices;
 
-        public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices)
+        public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices, IDebtServices debtServices)
         {
             _creditCardServices = creditCardServices;
             _cardUserServices = cardUserServices;
@@ -97,12 +97,6 @@ namespace CreditCardManager.Controllers
                 creditCardDTO.UserId = userToken.Id;
 
                 CreditCardDTO card = _creditCardServices.CreateCreditCard(creditCardDTO);
-
-                _cardUserServices.CreateCardUser(new CreateCardUserDTO
-                {
-                    CardId = card.Id,
-                    UserId = card.UserId
-                });
 
                 return Created("CreditCard", card);
             }
