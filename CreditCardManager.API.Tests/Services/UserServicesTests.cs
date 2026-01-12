@@ -1,62 +1,63 @@
+using CreditCardManager.API.Tests.Services.Mocks;
+using CreditCardManager.Data;
 using CreditCardManager.DTOs;
-using CreditCardManager.Interfaces;
-using CreditCardManager.Services;
 using CreditCardManager.Tests.Data;
 
-namespace CreditCardManager.Tests.Services
-{
-    public class UserServicesTests
-    {
-        private readonly SqliteInMemoryController _sqliteInMemory;
-        private readonly IUserServices _userServices;
+namespace CreditCardManager.Tests.Services;
 
-        private readonly CreateUserDTO _defaultUser = new()
+public class UserServicesTests
+{
+    private readonly UserServicesMock _userServicesMock;
+
+    private readonly CreateUserDTO _defaultUser = new()
+    {
+        UserName = "user01",
+        Email = "user01@gmail.com",
+        Password = "newtonManja"
+    };
+
+    public UserServicesTests()
+    {
+        SqliteInMemoryController _sqliteInMemory = new();
+
+        CreditCardManagerDbContext _context = _sqliteInMemory.CreateContext();
+
+        _userServicesMock = new UserServicesMock(_context);
+    }
+
+    [Fact]
+    public void AddUserTest()
+    {
+        var response = _userServicesMock.Create(_defaultUser);
+        var getUser = _userServicesMock.GetUser(response?.Id ?? 0);
+
+        Assert.IsType<UserDTO>(response);
+        Assert.NotNull(getUser);
+        Assert.Equal(_defaultUser.UserName, getUser.UserName);
+    }
+
+    [Fact]
+    public void AddExistingUser()
+    {
+        _userServicesMock.Create(_defaultUser);
+
+        Assert.Throws<InvalidOperationException>(
+            () => _userServicesMock.Create(_defaultUser)
+        );
+    }
+
+    [Fact]
+    public void LoginUserTest()
+    {
+        LoginUserDTO login = new()
         {
-            UserName = "user01",
-            Email = "user01@gmail.com",
-            Password = "newtonManja"
+            Email = _defaultUser.Email,
+            Password = _defaultUser.Password
         };
 
-        public UserServicesTests()
-        {
-            _sqliteInMemory = new();
-            _userServices = new UserServices(_sqliteInMemory.CreateContext());
-        }
+        _userServicesMock.Create(_defaultUser);
+        var response = _userServicesMock.Login(login);
 
-        [Fact]
-        public void AddUserTest()
-        {
-            var response = _userServices.Create(_defaultUser);
-            var getUser = _userServices.GetUser(response?.Id ?? 0);
-
-            Assert.IsType<UserDTO>(response);
-            Assert.NotNull(getUser);
-            Assert.Equal(_defaultUser.UserName, getUser.UserName);
-        }
-
-        [Fact]
-        public void AddExistingUser()
-        {
-            _userServices.Create(_defaultUser);
-
-            Assert.Throws<InvalidOperationException>(
-                () => _userServices.Create(_defaultUser)
-            );
-        }
-
-        [Fact]
-        public void LoginUserTest()
-        {
-            LoginUserDTO login = new()
-            {
-                Email = _defaultUser.Email,
-                Password = _defaultUser.Password
-            };
-
-            _userServices.Create(_defaultUser);
-            var response = _userServices.Login(login);
-
-            Assert.IsType<UserDTO>(response);
-        }
+        Assert.IsType<UserDTO>(response);
     }
 }
