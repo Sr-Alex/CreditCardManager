@@ -8,11 +8,21 @@ namespace CreditCardManager.Extensions
         {
             app.UseCors();
 
-            app.UseMiddleware<LogMiddleware>();
-
             app.MapControllers();
 
             app.UseHttpsRedirection();
+
+            return app;
+        }
+
+        public static WebApplication UseDevelopmentTools(this WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi();
+                app.UseMiddleware<LogMiddleware>();
+            }
 
             return app;
         }
