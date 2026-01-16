@@ -81,21 +81,20 @@ namespace CreditCardManager.Services
             return debts;
         }
 
-        public bool UpdateDebt(int debtId, UpdateDebtDTO debtDTO)
+        public DebtDTO UpdateDebt(int debtId, UpdateDebtDTO debtData)
         {
-            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId);
-            if (debt == null) return false;
+            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId) ?? throw new Exception("Debt not found.");
 
-            if (debtDTO.Label != null) debt.Label = debtDTO.Label;
-            if (debtDTO.Date.HasValue) debt.Date = debtDTO.Date.Value;
-            if (debtDTO.Value.HasValue) debt.Value = debtDTO.Value.Value;
+            if (debtData.Label != null) debt.Label = debtData.Label;
+            if (debtData.Date.HasValue) debt.Date = debtData.Date.Value;
+            if (debtData.Value.HasValue) debt.Value = debtData.Value.Value;
 
             _context.Debts.Update(debt);
             _context.SaveChanges();
 
             _creditCardServices.UpdateInvoice(debt.CardId);
 
-            return true;
+            return GetDebt(debtId)!;
         }
 
         public bool DeleteDebt(int debtId)

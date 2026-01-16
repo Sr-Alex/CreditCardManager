@@ -78,7 +78,7 @@ namespace CreditCardManager.Controllers
 
         [Authorize]
         [HttpPut("debts/{id}")]
-        public IActionResult UpdateDebt(int id, [FromBody] UpdateDebtDTO debtDTO, [FromHeader] string Authorization)
+        public IActionResult UpdateDebt(int id, [FromBody] UpdateDebtDTO debtData, [FromHeader] string Authorization)
         {
             if (!ModelState.IsValid)
             {
@@ -97,8 +97,8 @@ namespace CreditCardManager.Controllers
                 return Unauthorized(new { Message = "You are not authorized to update this debt." });
             }
 
-            bool result = _debtServices.UpdateDebt(id, debtDTO);
-            return result ? Ok(new { Message = "Debt updated successfully." }) : BadRequest(new { Message = "Failed to update debt." });
+            DebtDTO result = _debtServices.UpdateDebt(id, debtData);
+            return Ok(result);
         }
 
         [Authorize]

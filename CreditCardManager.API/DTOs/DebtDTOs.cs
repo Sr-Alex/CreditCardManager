@@ -16,6 +16,7 @@ namespace CreditCardManager.DTOs
 
     public record CreateDebtDTO
     {
+        [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
 
         [Required(ErrorMessage = "CardId is required.")]
