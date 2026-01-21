@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CreditCardManager.DTOs
 {
-    public record CardUsersDTO
+    public record CardUserDTO
     {
-        public int CardId;
-        public List<UserDTO> Users = [];
+        public int UserId { get; set; }
+        public required string UserName { get; set; }
+        public int DebtsCount { get; set; }
+        public int PendingDebts { get; set; }
     }
 
     public record CreateCardUserDTO

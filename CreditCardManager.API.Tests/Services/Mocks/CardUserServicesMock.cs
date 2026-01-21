@@ -23,7 +23,7 @@ public class CardUserServicesMock : ICardUserServices
         return _cardUserServices.CreateCardUser(cardUserDTO);
     }
 
-    public CardUsersDTO GetCardUsers(int cardId)
+    public List<CardUserDTO> GetCardUsers(int cardId)
     {
         return _cardUserServices.GetCardUsers(cardId);
     }

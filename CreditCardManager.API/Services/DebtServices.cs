@@ -4,22 +4,28 @@ using CreditCardManager.Data;
 using CreditCardManager.DTOs;
 using CreditCardManager.Interfaces;
 using CreditCardManager.Models;
+using System.Data;
 
 namespace CreditCardManager.Services
 {
     public class DebtServices : IDebtServices
     {
+        #region Fields
         private readonly CreditCardManagerDbContext _context;
         private readonly UserServices _userServices;
         private readonly CreditCardServices _creditCardServices;
+        #endregion
 
+        #region Constructor
         public DebtServices(CreditCardManagerDbContext context)
         {
             _context = context;
             _userServices = new UserServices(_context);
             _creditCardServices = new CreditCardServices(_context);
         }
+        #endregion
 
+        #region Methods
         public bool CreateDebt(CreateDebtDTO debtDTO)
         {
             bool userExists = _userServices.UserIdExists(debtDTO.UserId);
@@ -33,7 +39,8 @@ namespace CreditCardManager.Services
                 CardId = debtDTO.CardId,
                 Label = debtDTO.Label,
                 Date = debtDTO.Date,
-                Value = debtDTO.Value
+                Value = debtDTO.Value,
+                IsPaid = debtDTO.IsPaid,
             });
             _context.SaveChanges();
 
@@ -44,23 +51,21 @@ namespace CreditCardManager.Services
 
         public DebtDTO? GetDebt(int debtId)
         {
-            DebtDTO? debt = _context.Debts
-                .Where(debt => debt.Id == debtId)
-                .Select(debt => new DebtDTO
-                {
-                    Id = debt.Id,
-                    Label = debt.Label,
-                    Value = debt.Value,
-                    Date = debt.Date,
-                    User = debt.UserId,
-                    Card = debt.CardId
-                })
-                .FirstOrDefault();
+            DebtModel? debt = _context.Debts
+                .Where(debt => debt.Id == debtId).FirstOrDefault();
 
-            if (debt == null)
-                return null;
+            if (debt == null) return null;
 
-            return debt;
+            return new DebtDTO
+            {
+                Id = debt.Id,
+                User = debt.UserId,
+                Card = debt.CardId,
+                Label = debt.Label,
+                Value = debt.Value,
+                Date = debt.Date,
+                IsPaid = debt.IsPaid
+            };
         }
 
         public List<DebtDTO> GetCardDebts(int cardId)
@@ -74,7 +79,8 @@ namespace CreditCardManager.Services
                         Card = debt.CardId,
                         Label = debt.Label,
                         Value = debt.Value,
-                        Date = debt.Date
+                        Date = debt.Date,
+                        IsPaid = debt.IsPaid
                     }
                 ).ToList();
 
@@ -109,5 +115,6 @@ namespace CreditCardManager.Services
 
             return true;
         }
+        #endregion
     }
 }

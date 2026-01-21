@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using CreditCardManager.Data;
 using CreditCardManager.DTOs;
 using CreditCardManager.Interfaces;
@@ -8,18 +9,22 @@ namespace CreditCardManager.Services
 {
     public class CreditCardServices : ICreditCardServices
     {
+        #region Fields
         private readonly CreditCardManagerDbContext _context;
         private readonly UserServices _userServices;
         private readonly CardUserServices _cardUserServices;
+        #endregion
 
-
+        #region Constructor
         public CreditCardServices(CreditCardManagerDbContext context)
         {
             _context = context;
             _userServices = new(context);
             _cardUserServices = new(context);
         }
+        #endregion
 
+        #region Methods
         public bool IsUserOwnerOfCard(int cardId, int userId)
         {
             CreditCardDTO? card = GetCreditCard(cardId);
@@ -38,34 +43,43 @@ namespace CreditCardManager.Services
 
         public CreditCardDTO? GetCreditCard(int id)
         {
-            CreditCardDTO? card = _context.CreditCards
-                .Where(c => c.Id == id)
-                .Select(c => new CreditCardDTO
-                {
-                    Id = c.Id,
-                    UserId = c.UserId,
-                    CardName = c.CardName,
-                    ExpiresAt = c.ExpiresAt,
-                    Invoice = c.Invoice.ToString("F2"),
-                    Limit = c.Limit.ToString("F2")
-                })
-                .FirstOrDefault();
+            CreditCardModel? card = _context.CreditCards.FirstOrDefault(c => c.Id == id);
 
-            return card;
+            if (card == null) return null;
+
+            int pendantDebtsCount = _context.Debts
+                .Where(d => d.CardId == id && d.IsPaid == false)
+                .Count();
+
+            return new CreditCardDTO
+            {
+                Id = card.Id,
+                UserId = card.UserId,
+                CardName = card.CardName,
+                ExpiresAt = card.ExpiresAt,
+                Invoice = card.Invoice.ToString("F2"),
+                Limit = card.Limit.ToString("F2"),
+                PendantDebts = pendantDebtsCount
+            };
         }
 
         public List<CreditCardDTO> GetUserCreditCards(int userId)
         {
             List<CreditCardDTO> cards = _context.CreditCards
                 .Where(c => c.UserId == userId)
-                .Select(c => new CreditCardDTO
-                {
-                    Id = c.Id,
-                    CardName = c.CardName,
-                    ExpiresAt = c.ExpiresAt,
-                    Invoice = c.Invoice.ToString("F2"),
-                    Limit = c.Limit.ToString("F2")
-                })
+                .GroupJoin(_context.Debts,
+                    c => c.Id,
+                    d => d.CardId,
+                    (c, d) => new CreditCardDTO
+                    {
+                        Id = c.Id,
+                        UserId = c.UserId,
+                        CardName = c.CardName,
+                        ExpiresAt = c.ExpiresAt,
+                        Invoice = c.Invoice.ToString("F2"),
+                        Limit = c.Limit.ToString("F2"),
+                        PendantDebts = d.Count(d => d.CardId == c.Id)
+                    })
                 .ToList();
 
             return cards;
@@ -94,15 +108,7 @@ namespace CreditCardManager.Services
                 UserId = createDTO.UserId
             });
 
-            return new CreditCardDTO
-            {
-                Id = card.Entity.Id,
-                CardName = card.Entity.CardName,
-                ExpiresAt = card.Entity.ExpiresAt,
-                Invoice = card.Entity.Invoice.ToString(),
-                Limit = card.Entity.Limit.ToString(),
-                UserId = card.Entity.UserId
-            };
+            return GetCreditCard(card.Entity.Id)!;
         }
 
         public bool DeleteCreditCard(int cardId)
@@ -147,5 +153,6 @@ namespace CreditCardManager.Services
 
             return _cardUserServices.CreateCardUser(create);
         }
+        #endregion
     }
 }

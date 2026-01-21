@@ -7,10 +7,11 @@ namespace CreditCardManager.DTOs
     {
         public int Id { get; init; }
         public int UserId { get; set; }
-        public string CardName { get; init; } = string.Empty;
+        public required string CardName { get; init; }
         public DateTime ExpiresAt { get; init; }
-        public string Invoice { get; set; } = string.Empty;
-        public string Limit { get; init; } = string.Empty;
+        public required string Invoice { get; set; }
+        public required string Limit { get; set; }
+        public int PendantDebts { get; set; }
     }
 
     public record CreateCreditCardDTO

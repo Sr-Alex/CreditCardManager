@@ -10,15 +10,20 @@ namespace CreditCardManager.Services
 {
     public class UserServices : IUserServices
     {
+        #region Fields
         private readonly CreditCardManagerDbContext _context;
         private readonly PasswordHasher<UserModel> _userHasher;
+        #endregion
 
+        #region Constructor
         public UserServices(CreditCardManagerDbContext context)
         {
             _context = context;
             _userHasher = new PasswordHasher<UserModel>();
         }
+        #endregion
 
+        #region Methods
         public bool UserIdExists(int id)
         {
             return _context.Users.Any(u => u.Id == id);
@@ -116,5 +121,6 @@ namespace CreditCardManager.Services
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace CreditCardManager.DTOs
 
         [Required(ErrorMessage = "UserName is required.")]
         public string UserName { get; init; } = default!;
-        
+
         [Required(ErrorMessage = "UserName is required.")]
         public string Email { get; init; } = default!;
     }
@@ -34,6 +34,7 @@ namespace CreditCardManager.DTOs
         public string Email { get; set; } = default!;
 
         [Required]
+        [MinLength(8)]
         public string Password { get; set; } = default!;
     }
 }

@@ -14,7 +14,7 @@ namespace CreditCardManager.Controllers
         private readonly ICreditCardServices _creditCardServices;
         private readonly ICardUserServices _cardUserServices;
 
-        public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices, IDebtServices debtServices)
+        public CreditCardController(ICreditCardServices creditCardServices, ICardUserServices cardUserServices, ITokenServices tokenServices)
         {
             _creditCardServices = creditCardServices;
             _cardUserServices = cardUserServices;
@@ -53,8 +53,8 @@ namespace CreditCardManager.Controllers
                 return NotFound("This credit card does not exist.");
             }
 
-            CardUsersDTO result = _cardUserServices.GetCardUsers(id);
-            return Ok(result.Users);
+            List<CardUserDTO> result = _cardUserServices.GetCardUsers(id);
+            return Ok(result);
         }
 
         [Authorize]

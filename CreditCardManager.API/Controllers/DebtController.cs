@@ -1,7 +1,8 @@
-using CreditCardManager.DTOs;
-using CreditCardManager.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using CreditCardManager.DTOs;
+using CreditCardManager.Interfaces;
 
 namespace CreditCardManager.Controllers
 {
@@ -23,11 +24,11 @@ namespace CreditCardManager.Controllers
         [HttpGet("{id}")]
         public IActionResult GetDebt(int id)
         {
-            DebtDTO? result = _debtServices.GetDebt(id);
+            DebtDTO? debt = _debtServices.GetDebt(id);
 
-            if (result == null) return NotFound();
+            if (debt == null) return NotFound();
 
-            return Ok(result);
+            return Ok(debt);
         }
 
         [Authorize]
@@ -40,7 +41,7 @@ namespace CreditCardManager.Controllers
 
                 if (!_creditCardServices.IsCardUser(cardId, userId)) throw new Exception("User does not have access to this card's debts.");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return Unauthorized(e.Message);
             }

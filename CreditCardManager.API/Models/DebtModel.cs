@@ -25,9 +25,10 @@ namespace CreditCardManager.Models
         [DefaultValue("GETDATE()")]
         public DateTime Date { get; set; } = DateTime.Now;
 
-        [DefaultValue(0.00)]
         [DataType(DataType.Currency)]
-        public decimal Value { get; set; } = 0.0m;
+        public decimal Value { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsPaid { get; set; } = false;
     }
 }

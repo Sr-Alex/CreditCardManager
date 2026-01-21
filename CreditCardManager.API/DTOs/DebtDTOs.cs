@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using CreditCardManager.Validators;
 
 namespace CreditCardManager.DTOs
@@ -8,10 +9,10 @@ namespace CreditCardManager.DTOs
         public int Id { get; set; }
         public int User { get; set; }
         public int Card { get; set; }
-
-        public string Label { get; set; } = default!;
-        public decimal Value;
-        public DateTime Date;
+        public required string Label { get; set; }
+        public decimal Value { get; set; }
+        public DateTime Date { get; set; }
+        public bool IsPaid { get; set; }
     }
 
     public record CreateDebtDTO
@@ -32,7 +33,7 @@ namespace CreditCardManager.DTOs
         [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
         public decimal Value { get; set; }
 
-
+        public bool IsPaid { get; set; } = false;
     }
     public record UpdateDebtDTO
     {
@@ -43,5 +44,7 @@ namespace CreditCardManager.DTOs
 
         [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
         public decimal? Value { get; set; }
+
+        public bool? IsPaid { get; set; }
     }
 }

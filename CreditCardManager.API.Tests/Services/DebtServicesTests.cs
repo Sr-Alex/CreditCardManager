@@ -1,3 +1,4 @@
+using System.Data;
 using CreditCardManager.API.Tests.Services.Mocks;
 using CreditCardManager.Data;
 using CreditCardManager.DTOs;
@@ -161,26 +162,21 @@ public class DebtServicesTests
 
         // Act
         var result = _debtServicesMock.UpdateDebt(debtId, updateDebtDto);
-        var updatedDebt = _debtServicesMock.GetDebt(debtId);
 
         // Assert
-        Assert.True(result);
-        Assert.NotNull(updatedDebt);
-        Assert.Equal("Updated Debt", updatedDebt.Label);
-        Assert.Equal(150.00m, updatedDebt.Value);
+        Assert.NotNull(result);
+        Assert.Equal("Updated Debt", result.Label);
+        Assert.Equal(150.00m, result.Value);
     }
 
     [Fact]
-    public void UpdateDebt_ShouldReturnFalse_WhenNotExists()
+    public void UpdateDebt_ShouldThrowException_WhenNotExists()
     {
         // Arrange
         UpdateDebtDTO updateDebtDto = new() { Label = "Updated Debt" };
 
-        // Act
-        var result = _debtServicesMock.UpdateDebt(999, updateDebtDto);
-
-        // Assert
-        Assert.False(result);
+        // Act & Assert
+        Assert.ThrowsAny<Exception>(() => _debtServicesMock.UpdateDebt(999, updateDebtDto));
     }
 
     [Fact]

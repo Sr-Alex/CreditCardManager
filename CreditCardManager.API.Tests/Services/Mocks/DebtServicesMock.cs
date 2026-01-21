@@ -39,7 +39,7 @@ public class DebtServicesMock : IDebtServices
         return _debtServices.GetDebt(debtId);
     }
 
-    public bool UpdateDebt(int debtId, UpdateDebtDTO debtDTO)
+    public DebtDTO UpdateDebt(int debtId, UpdateDebtDTO debtDTO)
     {
         return _debtServices.UpdateDebt(debtId, debtDTO);
     }
