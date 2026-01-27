@@ -78,7 +78,7 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpPut("debts/{id}")]
+        [HttpPut("{id}")]
         public IActionResult UpdateDebt(int id, [FromBody] UpdateDebtDTO debtData, [FromHeader] string Authorization)
         {
             if (!ModelState.IsValid)
@@ -103,7 +103,7 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpDelete("debts/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteDebt(int id, [FromHeader] string Authorization)
         {
             DebtDTO? debt = _debtServices.GetDebt(id);

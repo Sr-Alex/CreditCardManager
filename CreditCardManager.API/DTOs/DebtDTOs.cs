@@ -23,6 +23,7 @@ namespace CreditCardManager.DTOs
         [Required(ErrorMessage = "CardId is required.")]
         public int CardId { get; set; }
 
+        [MaxLength(100, ErrorMessage = "Label cannot exceed 100 characters.")]
         public string Label { get; set; } = "User debt";
 
         [DataType(DataType.DateTime)]
@@ -37,6 +38,7 @@ namespace CreditCardManager.DTOs
     }
     public record UpdateDebtDTO
     {
+        [MaxLength(100, ErrorMessage = "Label cannot exceed 100 characters.")]
         public string? Label { get; set; }
 
         [OnlyPastDate]
