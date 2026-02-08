@@ -9,8 +9,8 @@ namespace CreditCardManager.DTOs
         public int UserId { get; set; }
         public required string CardName { get; init; }
         public DateTime ExpiresAt { get; init; }
-        public required string Invoice { get; set; }
-        public required string Limit { get; set; }
+        public required decimal Invoice { get; set; }
+        public required decimal Limit { get; set; }
         public int PendantDebts { get; set; }
     }
 

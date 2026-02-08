@@ -37,4 +37,11 @@ namespace CreditCardManager.DTOs
         [MinLength(8)]
         public string Password { get; set; } = default!;
     }
+
+    public record UserEmailDTO
+    {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string UserEmail { get; set; } = default!;
+    }
 }

@@ -9,5 +9,6 @@ namespace CreditCardManager.Interfaces
         bool CreateDebt(CreateDebtDTO debtDTO);
         DebtDTO UpdateDebt(int debtId, UpdateDebtDTO debtDTO);
         bool DeleteDebt(int debtId);
+        bool PayDebt(int debtId);
     }
 }

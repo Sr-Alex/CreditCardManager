@@ -68,7 +68,7 @@ namespace CreditCardManager.Controllers
             }
             catch (Exception ex)
             {
-                return Conflict(new { Message = ex.Message });
+                return Conflict(new { ex.Message });
             }
         }
 

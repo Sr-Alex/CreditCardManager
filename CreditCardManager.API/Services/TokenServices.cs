@@ -12,20 +12,15 @@ namespace CreditCardManager.Services
 {
     public class TokenServices : ITokenServices
     {
-        #region Fields
         private readonly IConfiguration _config;
         private readonly JwtSecurityTokenHandler _JWThandler;
-        #endregion
 
-        #region Constructor
         public TokenServices(IConfiguration configuration)
         {
             _config = configuration;
             _JWThandler = new();
         }
-        #endregion
 
-        #region Methods
         public UserDTO DecodeUserToken(string JWTtoken)
         {
             const string bearerPrefix = "bearer ";
@@ -93,6 +88,5 @@ namespace CreditCardManager.Services
 
             return new ClaimsIdentity(claims);
         }
-        #endregion
     }
 }

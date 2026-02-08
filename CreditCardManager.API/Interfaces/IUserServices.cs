@@ -8,6 +8,7 @@ namespace CreditCardManager.Interfaces
         bool EmailAlreadyExists(string Email);
         List<UserDTO> GetUsers();
         UserDTO? GetUser(int id);
+        UserDTO? GetUserByEmail(string userEmail);
 
         UserDTO Login(LoginUserDTO loginDTO);
         UserDTO Create(CreateUserDTO userDTO);

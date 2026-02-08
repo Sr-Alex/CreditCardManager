@@ -7,35 +7,16 @@ namespace CreditCardManager.Services
 {
     public class CardUserServices : ICardUserServices
     {
-        #region Fields
         private readonly CreditCardManagerDbContext _context;
-        #endregion
 
-        #region Constructor
         public CardUserServices(CreditCardManagerDbContext context)
         {
             _context = context;
         }
-        #endregion
 
-        #region Methods
         public bool CardUserExists(int cardId, int userId)
         {
-            return _context.CardUsers.Any(cUser => cUser.CardId == cardId && cUser.UserId == userId);
-        }
-
-        public bool CreateCardUser(CreateCardUserDTO createDTO)
-        {
-            if (CardUserExists(createDTO.CardId, createDTO.UserId)) return false;
-
-            _context.Add(new CardUserModel
-            {
-                CardId = createDTO.CardId,
-                UserId = createDTO.UserId
-            });
-            _context.SaveChanges();
-
-            return true;
+            return _context.CardUsers.Any(cardUser => cardUser.CardId == cardId && cardUser.UserId == userId);
         }
 
         public List<CardUserDTO> GetCardUsers(int cardId)
@@ -60,6 +41,33 @@ namespace CreditCardManager.Services
 
             return cardUsers;
         }
-        #endregion
+
+        public bool CreateCardUser(CreateCardUserDTO createDTO)
+        {
+            if (CardUserExists(createDTO.CardId, createDTO.UserId)) return false;
+
+            _context.Add(new CardUserModel
+            {
+                CardId = createDTO.CardId,
+                UserId = createDTO.UserId
+            });
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public bool DeleteCardUser(int cardId, int userId)
+        {
+            CardUserModel? cardUser = _context.CardUsers
+                .FirstOrDefault(cardUser => cardUser.CardId == cardId && cardUser.UserId == userId);
+
+            if (cardUser == null) return false;
+
+            _context.CardUsers.Remove(cardUser);
+            _context.SaveChanges();
+
+            return true;
+        }
+
     }
 }

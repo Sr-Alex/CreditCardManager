@@ -119,7 +119,28 @@ namespace CreditCardManager.Controllers
             }
 
             bool result = _debtServices.DeleteDebt(id);
-            return result ? Ok(new { Message = "Debt deleted successfully." }) : BadRequest(new { Message = "Failed to delete debt." });
+            return result ? NoContent() : BadRequest(new { Message = "Failed to delete debt." });
+        }
+
+        [Authorize]
+        [HttpPost("{debtId}/pay")]
+        public IActionResult PayDebt(int debtId, [FromHeader] string Authorization)
+        {
+            DebtDTO? debt = _debtServices.GetDebt(debtId);
+            if (debt == null)
+            {
+                return NotFound(new { Message = "Debt not found." });
+            }
+
+            int userId = _tokenServices.DecodeUserToken(Authorization).Id;
+            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
+            {
+                return Unauthorized(new { Message = "You are not authorized to pay this debt." });
+            }
+
+            bool result = _debtServices.PayDebt(debtId);
+
+            return result ? Ok() : BadRequest(new { Message = "Failed to pay debt." });
         }
     }
 }

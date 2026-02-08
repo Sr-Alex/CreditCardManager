@@ -10,22 +10,17 @@ namespace CreditCardManager.Services
 {
     public class DebtServices : IDebtServices
     {
-        #region Fields
         private readonly CreditCardManagerDbContext _context;
         private readonly UserServices _userServices;
         private readonly CreditCardServices _creditCardServices;
-        #endregion
 
-        #region Constructor
         public DebtServices(CreditCardManagerDbContext context)
         {
             _context = context;
             _userServices = new UserServices(_context);
             _creditCardServices = new CreditCardServices(_context);
         }
-        #endregion
 
-        #region Methods
         public bool CreateDebt(CreateDebtDTO debtDTO)
         {
             bool userExists = _userServices.UserIdExists(debtDTO.UserId);
@@ -115,6 +110,20 @@ namespace CreditCardManager.Services
 
             return true;
         }
-        #endregion
+
+        public bool PayDebt(int debtId)
+        {
+            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId);
+
+            if (debt == null) return false;
+
+            debt.IsPaid = true;
+            _context.Debts.Update(debt);
+            _context.SaveChanges();
+
+            _creditCardServices.UpdateInvoice(debt.CardId);
+
+            return true;
+        }
     }
 }

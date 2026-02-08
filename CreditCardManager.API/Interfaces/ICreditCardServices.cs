@@ -12,6 +12,6 @@ namespace CreditCardManager.Interfaces
         CreditCardDTO? GetCreditCard(int id);
         List<CreditCardDTO> GetUserCreditCards(int userId);
         decimal UpdateInvoice(int cardId);
-        bool AddUser(int cardId, int userId);
+        bool AddUser(int cardId, string userEmail);
     }
 }

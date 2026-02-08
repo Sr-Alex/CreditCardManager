@@ -1,30 +1,25 @@
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 using CreditCardManager.Data;
 using CreditCardManager.DTOs;
 using CreditCardManager.Interfaces;
 using CreditCardManager.Models;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CreditCardManager.Services
 {
     public class CreditCardServices : ICreditCardServices
     {
-        #region Fields
         private readonly CreditCardManagerDbContext _context;
         private readonly UserServices _userServices;
         private readonly CardUserServices _cardUserServices;
-        #endregion
 
-        #region Constructor
         public CreditCardServices(CreditCardManagerDbContext context)
         {
             _context = context;
             _userServices = new(context);
             _cardUserServices = new(context);
         }
-        #endregion
 
-        #region Methods
         public bool IsUserOwnerOfCard(int cardId, int userId)
         {
             CreditCardDTO? card = GetCreditCard(cardId);
@@ -57,14 +52,18 @@ namespace CreditCardManager.Services
                 UserId = card.UserId,
                 CardName = card.CardName,
                 ExpiresAt = card.ExpiresAt,
-                Invoice = card.Invoice.ToString("F2"),
-                Limit = card.Limit.ToString("F2"),
+                Invoice = card.Invoice,
+                Limit = card.Limit,
                 PendantDebts = pendantDebtsCount
             };
         }
 
         public List<CreditCardDTO> GetUserCreditCards(int userId)
         {
+            bool userExists = _userServices.UserIdExists(userId);
+
+            if (!userExists) throw new Exception("This user does not exist.");
+
             List<CreditCardDTO> cards = _context.CreditCards
                 .Where(c => c.UserId == userId)
                 .GroupJoin(_context.Debts,
@@ -76,8 +75,8 @@ namespace CreditCardManager.Services
                         UserId = c.UserId,
                         CardName = c.CardName,
                         ExpiresAt = c.ExpiresAt,
-                        Invoice = c.Invoice.ToString("F2"),
-                        Limit = c.Limit.ToString("F2"),
+                        Invoice = c.Invoice,
+                        Limit = c.Limit,
                         PendantDebts = d.Count(d => d.CardId == c.Id)
                     })
                 .ToList();
@@ -129,7 +128,7 @@ namespace CreditCardManager.Services
                 ?? throw new Exception("This Credit Card does not exist.");
 
             card.Invoice = _context.Debts
-                .Where(debt => debt.CardId == cardId)
+                .Where(debt => debt.CardId == cardId && debt.IsPaid == false)
                 .Sum(debt => debt.Value);
 
             _context.CreditCards.Update(card);
@@ -138,21 +137,30 @@ namespace CreditCardManager.Services
             return card.Invoice;
         }
 
-        public bool AddUser(int cardId, int userId)
+        public bool AddUser(int cardId, string userEmail)
+        {
+            bool cardExists = CardIdExists(cardId);
+            UserDTO? user = _userServices.GetUserByEmail(userEmail);
+
+            if (!cardExists || user == null) throw new Exception("This credit card or user does not exist.");
+
+            CreateCardUserDTO createCardUser = new()
+            {
+                CardId = cardId,
+                UserId = user.Id
+            };
+
+            return _cardUserServices.CreateCardUser(createCardUser);
+        }
+
+        public bool RemoveUser(int cardId, int userId)
         {
             bool cardExists = CardIdExists(cardId);
             bool userExists = _userServices.UserIdExists(userId);
 
             if (!cardExists || !userExists) throw new Exception("This credit card or user does not exist.");
 
-            CreateCardUserDTO create = new()
-            {
-                CardId = cardId,
-                UserId = userId
-            };
-
-            return _cardUserServices.CreateCardUser(create);
+            return _cardUserServices.DeleteCardUser(cardId, userId);
         }
-        #endregion
     }
 }

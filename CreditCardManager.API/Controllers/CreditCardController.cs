@@ -21,23 +21,28 @@ namespace CreditCardManager.Controllers
             _tokenServices = tokenServices;
         }
 
+        [Authorize]
         [HttpGet]
-        public IActionResult GetCreditCards([FromQuery] int userId)
+        public IActionResult GetCreditCards([FromQuery] int userId, [FromHeader] string Authorization)
         {
-            List<CreditCardDTO> cards = _creditCardServices.GetUserCreditCards(userId);
+            int userIdToken = _tokenServices.DecodeUserToken(Authorization).Id;
 
-            if (cards == null || cards.Count == 0)
+            try
             {
-                return NotFound(new { Message = "No credit cards found" });
+                List<CreditCardDTO> cards = _creditCardServices.GetUserCreditCards(userIdToken);
+                return Ok(cards);
+            }
+            catch (System.Exception)
+            {
+                return NotFound("This user does not exist.");
             }
 
-            return Ok(cards);
         }
 
-        [HttpGet("details/{id}")]
-        public IActionResult GetCreditCard(int id)
+        [HttpGet("details/{cardId}")]
+        public IActionResult GetCreditCard(int cardId)
         {
-            CreditCardDTO? card = _creditCardServices.GetCreditCard(id);
+            CreditCardDTO? card = _creditCardServices.GetCreditCard(cardId);
 
             if (card == null) return NotFound();
 
@@ -45,35 +50,43 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpGet("details/{id}/users")]
-        public IActionResult GetCreditCardUsers(int id)
+        [HttpGet("details/{cardId}/users")]
+        public IActionResult GetCreditCardUsers(int cardId)
         {
-            if (!_creditCardServices.CardIdExists(id))
+            if (!_creditCardServices.CardIdExists(cardId))
             {
                 return NotFound("This credit card does not exist.");
             }
 
-            List<CardUserDTO> result = _cardUserServices.GetCardUsers(id);
+            List<CardUserDTO> result = _cardUserServices.GetCardUsers(cardId);
             return Ok(result);
         }
 
         [Authorize]
-        [HttpPost("details/{id}/users")]
-        public IActionResult AddUser(int id, [FromBody] int userId, [FromHeader] string Authorization)
+        [HttpPost("details/{cardId}/users")]
+        public IActionResult AddUser(int cardId, [FromBody] UserEmailDTO userEmailDTO, [FromHeader] string Authorization)
         {
-            int userIdToken = _tokenServices.DecodeUserToken(Authorization).Id;
+            UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
 
-            if (!_creditCardServices.IsUserOwnerOfCard(id, userIdToken))
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!_creditCardServices.IsUserOwnerOfCard(cardId, userToken.Id))
                 return Unauthorized(new
                 {
                     Message = "You are not authorized to add users to this credit card."
                 });
 
+            if (userEmailDTO.UserEmail == userToken.Email)
+                return BadRequest(new
+                {
+                    Message = "You are already the owner of this credit card."
+                });
+
             try
             {
-                bool result = _creditCardServices.AddUser(id, userId);
+                bool result = _creditCardServices.AddUser(cardId, userEmailDTO.UserEmail);
                 return result
-                    ? Created("Created", new { Message = "User added to credit card successfully." })
+                    ? Ok(new { Message = "User added to credit card successfully." })
                     : Conflict("User already in credit card.");
             }
             catch (Exception ex)
@@ -98,7 +111,7 @@ namespace CreditCardManager.Controllers
 
                 CreditCardDTO card = _creditCardServices.CreateCreditCard(creditCardDTO);
 
-                return Created("CreditCard", card);
+                return Created("Created", card);
             }
             catch (Exception ex)
             {
@@ -127,7 +140,7 @@ namespace CreditCardManager.Controllers
             }
 
             return _creditCardServices.DeleteCreditCard(id)
-            ? Ok()
+            ? NoContent()
             : NotFound();
         }
     }
