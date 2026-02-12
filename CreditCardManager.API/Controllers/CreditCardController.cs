@@ -96,6 +96,34 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
+        [HttpDelete("details/{cardId}/users")]
+        public IActionResult RemoveUser(int cardId, [FromBody] DeleteCardUserDTO deleteCardUser, [FromHeader] string Authorization)
+        {
+            UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            Console.WriteLine(deleteCardUser.CardUserId);
+
+            if (!_creditCardServices.IsUserOwnerOfCard(cardId, userToken.Id))
+                return Unauthorized(new
+                {
+                    Message = "You are not authorized to remove users from this credit card.",
+                });
+
+            try
+            {
+                bool result = _creditCardServices.RemoveUser(cardId, deleteCardUser.CardUserId);
+                return result
+                    ? NoContent()
+                    : NotFound("User not linked to this credit card.");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Authorize]
         [HttpPost]
         public IActionResult CreateCreditCard([FromBody] CreateCreditCardDTO creditCardDTO, [FromHeader] string Authorization)
         {

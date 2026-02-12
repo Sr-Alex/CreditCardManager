@@ -4,6 +4,7 @@ namespace CreditCardManager.Interfaces
 {
     public interface IDebtServices
     {
+        bool IsDebtOwner(int debtId, int userId);
         DebtDTO? GetDebt(int debtId);
         List<DebtDTO> GetCardDebts(int cardId);
         bool CreateDebt(CreateDebtDTO debtDTO);

@@ -32,6 +32,7 @@ namespace CreditCardManager.Services
                     d => d.CardId,
                     (cardU, d) => new CardUserDTO
                     {
+                        Id = cardU.cardU.Id,
                         UserId = cardU.u.Id,
                         UserName = cardU.u.UserName,
                         DebtsCount = d.Count(d => d.UserId == cardU.u.Id),
@@ -56,10 +57,10 @@ namespace CreditCardManager.Services
             return true;
         }
 
-        public bool DeleteCardUser(int cardId, int userId)
+        public bool DeleteCardUser(int cardUserId)
         {
             CardUserModel? cardUser = _context.CardUsers
-                .FirstOrDefault(cardUser => cardUser.CardId == cardId && cardUser.UserId == userId);
+                .FirstOrDefault(cardUser => cardUser.Id == cardUserId);
 
             if (cardUser == null) return false;
 

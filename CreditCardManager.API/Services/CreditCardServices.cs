@@ -65,19 +65,23 @@ namespace CreditCardManager.Services
             if (!userExists) throw new Exception("This user does not exist.");
 
             List<CreditCardDTO> cards = _context.CreditCards
-                .Where(c => c.UserId == userId)
-                .GroupJoin(_context.Debts,
+                .Join(_context.CardUsers,
                     c => c.Id,
+                    cardUser => cardUser.CardId,
+                    (c, cardUser) => new { Card = c, CardUser = cardUser })
+                .Where(c => c.CardUser.UserId == userId)
+                .GroupJoin(_context.Debts,
+                    c => c.Card.Id,
                     d => d.CardId,
                     (c, d) => new CreditCardDTO
                     {
-                        Id = c.Id,
-                        UserId = c.UserId,
-                        CardName = c.CardName,
-                        ExpiresAt = c.ExpiresAt,
-                        Invoice = c.Invoice,
-                        Limit = c.Limit,
-                        PendantDebts = d.Count(d => d.CardId == c.Id)
+                        Id = c.Card.Id,
+                        UserId = c.Card.UserId,
+                        CardName = c.Card.CardName,
+                        ExpiresAt = c.Card.ExpiresAt,
+                        Invoice = c.Card.Invoice,
+                        Limit = c.Card.Limit,
+                        PendantDebts = d.Count(d => d.CardId == c.Card.Id)
                     })
                 .ToList();
 
@@ -153,14 +157,13 @@ namespace CreditCardManager.Services
             return _cardUserServices.CreateCardUser(createCardUser);
         }
 
-        public bool RemoveUser(int cardId, int userId)
+        public bool RemoveUser(int cardId, int cardUserId)
         {
             bool cardExists = CardIdExists(cardId);
-            bool userExists = _userServices.UserIdExists(userId);
 
-            if (!cardExists || !userExists) throw new Exception("This credit card or user does not exist.");
+            if (!cardExists) throw new Exception("This credit card does not exist.");
 
-            return _cardUserServices.DeleteCardUser(cardId, userId);
+            return _cardUserServices.DeleteCardUser(cardUserId);
         }
     }
 }

@@ -78,27 +78,27 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public IActionResult UpdateDebt(int id, [FromBody] UpdateDebtDTO debtData, [FromHeader] string Authorization)
+        [HttpPut("{debtId}")]
+        public IActionResult UpdateDebt(int debtId, [FromBody] UpdateDebtDTO debtData, [FromHeader] string Authorization)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            DebtDTO? debt = _debtServices.GetDebt(id);
+            DebtDTO? debt = _debtServices.GetDebt(debtId);
             if (debt == null)
             {
                 return NotFound();
             }
 
             int userId = _tokenServices.DecodeUserToken(Authorization).Id;
-            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
+            if (!_debtServices.IsDebtOwner(debtId, userId) && !_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
             {
                 return Unauthorized(new { Message = "You are not authorized to update this debt." });
             }
 
-            DebtDTO result = _debtServices.UpdateDebt(id, debtData);
+            DebtDTO result = _debtServices.UpdateDebt(debtId, debtData);
             return Ok(result);
         }
 
@@ -113,7 +113,7 @@ namespace CreditCardManager.Controllers
             }
 
             int userId = _tokenServices.DecodeUserToken(Authorization).Id;
-            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
+            if (!_debtServices.IsDebtOwner(id, userId) && !_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
             {
                 return Unauthorized(new { Message = "You are not authorized to delete this debt." });
             }
@@ -133,7 +133,7 @@ namespace CreditCardManager.Controllers
             }
 
             int userId = _tokenServices.DecodeUserToken(Authorization).Id;
-            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId))
+            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId) || !_debtServices.IsDebtOwner(debtId, userId))
             {
                 return Unauthorized(new { Message = "You are not authorized to pay this debt." });
             }

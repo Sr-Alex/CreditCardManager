@@ -21,6 +21,14 @@ namespace CreditCardManager.Services
             _creditCardServices = new CreditCardServices(_context);
         }
 
+        public bool IsDebtOwner(int debtId, int userId)
+        {
+            DebtModel? debt = _context.Debts.FirstOrDefault(d => d.Id == debtId);
+            if (debt == null) return false;
+
+            return debt.UserId == userId;
+        }
+
         public bool CreateDebt(CreateDebtDTO debtDTO)
         {
             bool userExists = _userServices.UserIdExists(debtDTO.UserId);
