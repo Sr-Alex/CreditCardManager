@@ -10,6 +10,13 @@ public class CreditCardServicesTests
     private readonly CreditCardServicesMock _creditCardServicesMock;
     private readonly UserServicesMock _userServicesMock;
 
+    // Test constants
+    private const string DefaultUserName = "Test User";
+    private const string DefaultUserEmail = "test@example.com";
+    private const string DefaultPassword = "password";
+    private const string DefaultCardName = "Test Card";
+    private const decimal DefaultLimit = 1000.00m;
+
     public CreditCardServicesTests()
     {
         SqliteInMemoryController _sqliteInMemory = new();
@@ -18,6 +25,23 @@ public class CreditCardServicesTests
 
         _creditCardServicesMock = new CreditCardServicesMock(_context);
         _userServicesMock = new UserServicesMock(_context);
+    }
+
+    // Helper methods
+    private UserDTO CreateTestUser(string userName = DefaultUserName, string email = DefaultUserEmail)
+    {
+        return _userServicesMock.Create(new CreateUserDTO { UserName = userName, Email = email, Password = DefaultPassword });
+    }
+
+    private CreditCardDTO CreateTestCard(int userId, string cardName = DefaultCardName, decimal? limit = null)
+    {
+        return _creditCardServicesMock.CreateCreditCard(new CreateCreditCardDTO
+        {
+            UserId = userId,
+            CardName = cardName,
+            ExpiresAt = DateTime.Now.AddYears(1),
+            Limit = limit ?? DefaultLimit
+        });
     }
 
     [Fact]
@@ -212,7 +236,7 @@ public class CreditCardServicesTests
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
         // Act
-        var result = _creditCardServicesMock.AddUser(card.Id, user2.Id);
+        var result = _creditCardServicesMock.AddUser(card.Id, user2.Email);
 
         // Assert
         Assert.True(result);

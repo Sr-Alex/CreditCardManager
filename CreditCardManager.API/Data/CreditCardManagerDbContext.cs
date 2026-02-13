@@ -1,4 +1,3 @@
-using System.Configuration;
 using CreditCardManager.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,14 +22,6 @@ namespace CreditCardManager.Data
             : base(options)
         {
             _configuration = configuration;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured && _configuration != null)
-            {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-            }
         }
     }
 }

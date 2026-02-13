@@ -11,7 +11,7 @@ namespace CreditCardManager.API.Extensions
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             if (environment.IsDevelopment()) AddSqliteDb(services, connectionString ?? "");
-            else AddSqlServerDb(services, connectionString ?? "");
+            else AddPostgreSqlDb(services, connectionString ?? "");
 
             return services;
         }
@@ -23,10 +23,10 @@ namespace CreditCardManager.API.Extensions
             );
         }
 
-        private static void AddSqlServerDb(IServiceCollection services, string connectionString)
+        private static void AddPostgreSqlDb(IServiceCollection services, string connectionString)
         {
             services.AddDbContext<CreditCardManagerDbContext>(options =>
-                options.UseSqlServer(connectionString)
+                options.UseNpgsql(connectionString)
             );
         }
     }

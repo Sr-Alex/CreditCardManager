@@ -199,7 +199,7 @@ public class DebtServicesTests
         // Assert 
         Assert.NotNull(updatedCard);
         Assert.Equal(100.00m, debtsValue);
-        Assert.Equal(decimal.Parse(updatedCard.Invoice), debtsValue);
+        Assert.Equal(debtsValue, decimal.Parse(updatedCard.Invoice.ToString()));
     }
 
     [Fact]
@@ -259,6 +259,6 @@ public class DebtServicesTests
         // Assert 
         Assert.True(result);
         Assert.NotNull(updatedCard);
-        Assert.Equal(0, decimal.Parse(updatedCard.Invoice));
+        Assert.Equal(0, decimal.Parse(updatedCard.Invoice.ToString()));
     }
 }

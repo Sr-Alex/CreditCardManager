@@ -53,4 +53,9 @@ public class UserServicesMock : IUserServices
     {
         _userServices.Delete(id);
     }
+
+    public UserDTO? GetUserByEmail(string userEmail)
+    {
+        return _userServices.GetUserByEmail(userEmail);
+    }
 }

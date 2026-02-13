@@ -171,5 +171,15 @@ namespace CreditCardManager.Controllers
             ? NoContent()
             : NotFound();
         }
+
+        public IActionResult GetCreditCards(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IActionResult AddUser(int id, string email, string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

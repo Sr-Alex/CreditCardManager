@@ -1,0 +1,10 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+services:
+  creditcardmanager:
+    image: creditcardmanager
+    build:
+      context: .
+      dockerfile: CreditCardManager.API/Dockerfile
+    ports:
+      - 5177:5177

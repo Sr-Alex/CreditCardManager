@@ -39,6 +39,16 @@ public class DebtServicesMock : IDebtServices
         return _debtServices.GetDebt(debtId);
     }
 
+    public bool IsDebtOwner(int debtId, int userId)
+    {
+        return _debtServices.IsDebtOwner(debtId, userId);
+    }
+
+    public bool PayDebt(int debtId)
+    {
+        return _debtServices.PayDebt(debtId);
+    }
+
     public DebtDTO UpdateDebt(int debtId, UpdateDebtDTO debtDTO)
     {
         return _debtServices.UpdateDebt(debtId, debtDTO);

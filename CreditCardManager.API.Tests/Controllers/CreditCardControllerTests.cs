@@ -16,6 +16,13 @@ public class CreditCardControllerTests
     private readonly UserServicesMock _userServicesMock;
     private readonly CreditCardManagerDbContext _context;
 
+    // Test constants
+    private const string DefaultUserName = "Test User";
+    private const string DefaultUserEmail = "test@example.com";
+    private const string DefaultPassword = "password";
+    private const string DefaultCardName = "Test Card";
+    private const decimal DefaultLimit = 1000.00m;
+
     public CreditCardControllerTests()
     {
         SqliteInMemoryController _sqliteInMemory = new();
@@ -33,20 +40,35 @@ public class CreditCardControllerTests
         );
     }
 
+    // Helper methods for test setup
+    private UserDTO CreateTestUser(string userName = DefaultUserName, string email = DefaultUserEmail)
+    {
+        return _userServicesMock.Create(new CreateUserDTO { UserName = userName, Email = email, Password = DefaultPassword });
+    }
+
+    private CreditCardDTO CreateTestCard(int userId, string cardName = DefaultCardName, decimal? limit = null)
+    {
+        return _creditCardServicesMock.CreateCreditCard(new CreateCreditCardDTO
+        {
+            UserId = userId,
+            CardName = cardName,
+            ExpiresAt = DateTime.Now.AddYears(1),
+            Limit = limit ?? DefaultLimit
+        });
+    }
+
     #region GetCreditCards Tests
 
     [Fact]
-    public void GetCreditCards_ShouldReturnOkResult_WhenCardsExist()
+    public void GetCreditCards_Should_ReturnOkResult_When_CardsExist()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreateTestCard(user.Id);
+        string token = _tokenServicesMock.GenerateUserToken(user);
 
         // Act
-        IActionResult result = _controller.GetCreditCards(user.Id);
+        IActionResult result = _controller.GetCreditCards(user.Id, token);
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
@@ -56,13 +78,15 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void GetCreditCards_ShouldReturnNotFound_WhenNoCardsExist()
+    public void GetCreditCards_Should_ReturnNotFound_When_NoCardsExist()
     {
         // Arrange
+        UserDTO user = CreateTestUser();
+        string token = _tokenServicesMock.GenerateUserToken(user);
         int nonExistentUserId = 999;
 
         // Act
-        IActionResult result = _controller.GetCreditCards(nonExistentUserId);
+        IActionResult result = _controller.GetCreditCards(nonExistentUserId, token);
 
         // Assert
         NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -70,19 +94,16 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void GetCreditCards_ShouldReturnMultipleCards_WhenUserHasMultipleCards()
+    public void GetCreditCards_Should_ReturnMultipleCards_When_UserHasMultipleCards()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto1 = new() { UserId = user.Id, CardName = "Card 1", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreateCreditCardDTO createCardDto2 = new() { UserId = user.Id, CardName = "Card 2", ExpiresAt = DateTime.Now.AddYears(1), Limit = 2000.00m };
-        _creditCardServicesMock.CreateCreditCard(createCardDto1);
-        _creditCardServicesMock.CreateCreditCard(createCardDto2);
+        UserDTO user = CreateTestUser();
+        CreateTestCard(user.Id, "Card 1", 1000m);
+        CreateTestCard(user.Id, "Card 2", 2000m);
+        string token = _tokenServicesMock.GenerateUserToken(user);
 
         // Act
-        IActionResult result = _controller.GetCreditCards(user.Id);
+        IActionResult result = _controller.GetCreditCards(user.Id, token);
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
@@ -95,14 +116,11 @@ public class CreditCardControllerTests
     #region GetCreditCard Tests
 
     [Fact]
-    public void GetCreditCard_ShouldReturnOkResult_WhenCardExists()
+    public void GetCreditCard_Should_ReturnOkResult_When_CardExists()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         IActionResult result = _controller.GetCreditCard(card.Id);
@@ -115,7 +133,7 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void GetCreditCard_ShouldReturnNotFound_WhenCardDoesNotExist()
+    public void GetCreditCard_Should_ReturnNotFound_When_CardDoesNotExist()
     {
         // Arrange
         int nonExistentCardId = 999;
@@ -132,14 +150,11 @@ public class CreditCardControllerTests
     #region GetCreditCardUsers Tests
 
     [Fact]
-    public void GetCreditCardUsers_ShouldReturnOkResult_WhenCardExists()
+    public void GetCreditCardUsers_Should_ReturnOkResult_When_CardExists()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         IActionResult result = _controller.GetCreditCardUsers(card.Id);
@@ -151,7 +166,7 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void GetCreditCardUsers_ShouldReturnNotFound_WhenCardDoesNotExist()
+    public void GetCreditCardUsers_Should_ReturnNotFound_When_CardDoesNotExist()
     {
         // Arrange
         int nonExistentCardId = 999;
@@ -169,23 +184,16 @@ public class CreditCardControllerTests
     #region AddUser Tests
 
     [Fact]
-    public void AddUser_ShouldReturnCreated_WhenUserAddedSuccessfully()
+    public void AddUser_Should_ReturnCreated_When_UserAddedSuccessfully()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new() { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        UserDTO user1 = _userServicesMock.Create(createUserDto1);
-
-        CreateUserDTO createUserDto2 = new() { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        UserDTO user2 = _userServicesMock.Create(createUserDto2);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
-
+        UserDTO user1 = CreateTestUser("User1", "user1@example.com");
+        UserDTO user2 = CreateTestUser("User2", "user2@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
         string token = _tokenServicesMock.GenerateUserToken(user1);
-        string authHeader = token;
 
         // Act
-        IActionResult result = _controller.AddUser(card.Id, user2.Id, authHeader);
+        IActionResult result = _controller.AddUser(card.Id, new UserEmailDTO { UserEmail = user2.Email }, token);
 
         // Assert
         CreatedResult createdResult = Assert.IsType<CreatedResult>(result);
@@ -193,26 +201,17 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void AddUser_ShouldReturnConflict_WhenUserAlreadyAdded()
+    public void AddUser_Should_ReturnConflict_When_UserAlreadyAdded()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new() { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        UserDTO user1 = _userServicesMock.Create(createUserDto1);
-
-        CreateUserDTO createUserDto2 = new() { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        UserDTO user2 = _userServicesMock.Create(createUserDto2);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
-
+        UserDTO user1 = CreateTestUser("User1", "user1@example.com");
+        UserDTO user2 = CreateTestUser("User2", "user2@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
+        _creditCardServicesMock.AddUser(card.Id, user2.Email);
         string token = _tokenServicesMock.GenerateUserToken(user1);
-        string authHeader = token;
 
-        // Add user first time
-        _creditCardServicesMock.AddUser(card.Id, user2.Id);
-
-        // Act - Try to add same user again
-        IActionResult result = _controller.AddUser(card.Id, user2.Id, authHeader);
+        // Act
+        IActionResult result = _controller.AddUser(card.Id, new UserEmailDTO { UserEmail = user2.Email }, token);
 
         // Assert
         ConflictObjectResult conflictResult = Assert.IsType<ConflictObjectResult>(result);
@@ -220,26 +219,17 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void AddUser_ShouldReturnUnauthorized_WhenUserIsNotOwner()
+    public void AddUser_Should_ReturnUnauthorized_When_UserIsNotOwner()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new() { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        UserDTO user1 = _userServicesMock.Create(createUserDto1);
-
-        CreateUserDTO createUserDto2 = new() { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        UserDTO user2 = _userServicesMock.Create(createUserDto2);
-
-        CreateUserDTO createUserDto3 = new() { UserName = "User3", Email = "user3@example.com", Password = "password" };
-        UserDTO user3 = _userServicesMock.Create(createUserDto3);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
-
+        UserDTO user1 = CreateTestUser("User1", "user1@example.com");
+        UserDTO user2 = CreateTestUser("User2", "user2@example.com");
+        UserDTO user3 = CreateTestUser("User3", "user3@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
         string token = _tokenServicesMock.GenerateUserToken(user2);
-        string authHeader = token;
 
         // Act
-        IActionResult result = _controller.AddUser(card.Id, user3.Id, authHeader);
+        IActionResult result = _controller.AddUser(card.Id,  new UserEmailDTO { UserEmail = user3.Email }, token);
 
         // Assert
         UnauthorizedObjectResult unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
@@ -251,19 +241,15 @@ public class CreditCardControllerTests
     #region CreateCreditCard Tests
 
     [Fact]
-    public void CreateCreditCard_ShouldReturnCreated_WhenCardCreatedSuccessfully()
+    public void CreateCreditCard_Should_ReturnCreated_When_CardCreatedSuccessfully()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-
+        UserDTO user = CreateTestUser();
+        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000m };
         string token = _tokenServicesMock.GenerateUserToken(user);
-        string authHeader = token;
 
         // Act
-        IActionResult result = _controller.CreateCreditCard(createCardDto, authHeader);
+        IActionResult result = _controller.CreateCreditCard(createCardDto, token);
 
         // Assert
         CreatedResult createdResult = Assert.IsType<CreatedResult>(result);
@@ -273,22 +259,16 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void CreateCreditCard_ShouldReturnBadRequest_WhenModelStateIsInvalid()
+    public void CreateCreditCard_Should_ReturnBadRequest_When_ModelStateIsInvalid()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-
-        string token = _tokenServicesMock.GenerateUserToken(user);
-        string authHeader = token;
-
-        // Simulate invalid model state
+        UserDTO user = CreateTestUser();
+        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000m };
         _controller.ModelState.AddModelError("CardName", "Card name is required.");
+        string token = _tokenServicesMock.GenerateUserToken(user);
 
         // Act
-        IActionResult result = _controller.CreateCreditCard(createCardDto, authHeader);
+        IActionResult result = _controller.CreateCreditCard(createCardDto, token);
 
         // Assert
         BadRequestObjectResult badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -300,20 +280,15 @@ public class CreditCardControllerTests
     #region DeleteCreditCard Tests
 
     [Fact]
-    public void DeleteCreditCard_ShouldReturnOk_WhenCardDeletedSuccessfully()
+    public void DeleteCreditCard_Should_ReturnOk_When_CardDeletedSuccessfully()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
-
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
         string token = _tokenServicesMock.GenerateUserToken(user);
-        string authHeader = token;
 
         // Act
-        IActionResult result = _controller.DeleteCreditCard(card.Id, authHeader);
+        IActionResult result = _controller.DeleteCreditCard(card.Id, token);
 
         // Assert
         OkResult okResult = Assert.IsType<OkResult>(result);
@@ -321,42 +296,31 @@ public class CreditCardControllerTests
     }
 
     [Fact]
-    public void DeleteCreditCard_ShouldReturnNotFound_WhenCardDoesNotExist()
+    public void DeleteCreditCard_Should_ReturnNotFound_When_CardDoesNotExist()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
+        UserDTO user = CreateTestUser();
         string token = _tokenServicesMock.GenerateUserToken(user);
-        string authHeader = $"Bearer {token}";
-
         int nonExistentCardId = 999;
 
         // Act
-        IActionResult result = _controller.DeleteCreditCard(nonExistentCardId, authHeader);
+        IActionResult result = _controller.DeleteCreditCard(nonExistentCardId, token);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
-    public void DeleteCreditCard_ShouldReturnUnauthorized_WhenUserIsNotOwner()
+    public void DeleteCreditCard_Should_ReturnUnauthorized_When_UserIsNotOwner()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new() { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        UserDTO user1 = _userServicesMock.Create(createUserDto1);
-
-        CreateUserDTO createUserDto2 = new() { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        UserDTO user2 = _userServicesMock.Create(createUserDto2);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
-
+        UserDTO user1 = CreateTestUser("User1", "user1@example.com");
+        UserDTO user2 = CreateTestUser("User2", "user2@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
         string token = _tokenServicesMock.GenerateUserToken(user2);
-        string authHeader = token;
 
         // Act
-        IActionResult result = _controller.DeleteCreditCard(card.Id, authHeader);
+        IActionResult result = _controller.DeleteCreditCard(card.Id, token);
 
         // Assert
         UnauthorizedObjectResult unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);

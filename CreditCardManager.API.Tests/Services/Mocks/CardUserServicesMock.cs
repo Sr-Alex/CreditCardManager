@@ -18,9 +18,19 @@ public class CardUserServicesMock : ICardUserServices
         _cardUserServices = new CardUserServices(_context);
     }
 
+    public bool CardUserExists(int cardId, int userId)
+    {
+        return _cardUserServices.CardUserExists(cardId, userId);
+    }
+
     public bool CreateCardUser(CreateCardUserDTO cardUserDTO)
     {
         return _cardUserServices.CreateCardUser(cardUserDTO);
+    }
+
+    public bool DeleteCardUser(int cardUserId)
+    {
+        return _cardUserServices.DeleteCardUser(cardUserId);
     }
 
     public List<CardUserDTO> GetCardUsers(int cardId)

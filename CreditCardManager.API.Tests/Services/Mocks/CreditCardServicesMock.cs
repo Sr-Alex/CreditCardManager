@@ -18,9 +18,19 @@ public class CreditCardServicesMock : ICreditCardServices
         _creditCardServices = new CreditCardServices(_context);
     }
 
-    public bool AddUser(int cardId, int userId)
+    public bool AddUser(int cardId, string userEmail)
     {
-        return _creditCardServices.AddUser(cardId, userId);
+        return _creditCardServices.AddUser(cardId, userEmail);
+    }
+
+    public bool RemoveUser(int cardId, int userId)
+    {
+        return _creditCardServices.RemoveUser(cardId, userId);
+    }
+
+    public decimal UpdateInvoice(int cardId)
+    {
+        return _creditCardServices.UpdateInvoice(cardId);
     }
 
     public bool CardIdExists(int cardId)
@@ -56,10 +66,5 @@ public class CreditCardServicesMock : ICreditCardServices
     public bool IsUserOwnerOfCard(int cardId, int userId)
     {
         return _creditCardServices.IsUserOwnerOfCard(cardId, userId);
-    }
-
-    public decimal UpdateInvoice(int cardId)
-    {
-        return _creditCardServices.UpdateInvoice(cardId);
     }
 }
