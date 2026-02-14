@@ -137,6 +137,7 @@ namespace CreditCardManager.Controllers
                 UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
                 creditCardDTO.UserId = userToken.Id;
 
+                Console.WriteLine($"Credit card Expires At: {creditCardDTO.ExpiresAt}");
                 CreditCardDTO card = _creditCardServices.CreateCreditCard(creditCardDTO);
 
                 return Created("Created", card);

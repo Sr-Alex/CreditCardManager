@@ -52,7 +52,7 @@ public class CreditCardControllerTests
         {
             UserId = userId,
             CardName = cardName,
-            ExpiresAt = DateTime.Now.AddYears(1),
+            ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)),
             Limit = limit ?? DefaultLimit
         });
     }
@@ -229,7 +229,7 @@ public class CreditCardControllerTests
         string token = _tokenServicesMock.GenerateUserToken(user2);
 
         // Act
-        IActionResult result = _controller.AddUser(card.Id,  new UserEmailDTO { UserEmail = user3.Email }, token);
+        IActionResult result = _controller.AddUser(card.Id, new UserEmailDTO { UserEmail = user3.Email }, token);
 
         // Assert
         UnauthorizedObjectResult unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
@@ -245,7 +245,7 @@ public class CreditCardControllerTests
     {
         // Arrange
         UserDTO user = CreateTestUser();
-        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000m };
+        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000m };
         string token = _tokenServicesMock.GenerateUserToken(user);
 
         // Act
@@ -263,7 +263,7 @@ public class CreditCardControllerTests
     {
         // Arrange
         UserDTO user = CreateTestUser();
-        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000m };
+        CreateCreditCardDTO createCardDto = new() { CardName = "New Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000m };
         _controller.ModelState.AddModelError("CardName", "Card name is required.");
         string token = _tokenServicesMock.GenerateUserToken(user);
 

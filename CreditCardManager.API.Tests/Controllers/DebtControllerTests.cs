@@ -54,7 +54,7 @@ public class DebtControllerTests
         {
             UserId = userId,
             CardName = cardName,
-            ExpiresAt = DateTime.Now.AddYears(1),
+            ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)),
             Limit = limit ?? DefaultCardLimit
         });
     }
@@ -66,7 +66,7 @@ public class DebtControllerTests
             UserId = userId,
             CardId = cardId,
             Label = label,
-            Date = DateTime.Now.AddDays(-1),
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
             Value = value ?? DefaultDebtValue
         };
         _debtServicesMock.CreateDebt(debtDto);
@@ -174,7 +174,7 @@ public class DebtControllerTests
         // Arrange
         UserDTO user = CreateTestUser();
         CreditCardDTO card = CreateTestCard(user.Id);
-        CreateDebtDTO createDebtDto = new() { CardId = card.Id, Label = "New Debt", Date = DateTime.Now.AddDays(-1), Value = 150m };
+        CreateDebtDTO createDebtDto = new() { CardId = card.Id, Label = "New Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 150m };
         string token = _tokenServicesMock.GenerateUserToken(user);
 
         // Act
@@ -190,7 +190,7 @@ public class DebtControllerTests
     {
         // Arrange
         UserDTO user = CreateTestUser();
-        CreateDebtDTO createDebtDto = new() { CardId = 1, Label = "New Debt", Date = DateTime.Now.AddDays(-1), Value = 150m };
+        CreateDebtDTO createDebtDto = new() { CardId = 1, Label = "New Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 150m };
         _controller.ModelState.AddModelError("Label", "Label is required.");
         string token = _tokenServicesMock.GenerateUserToken(user);
 
@@ -206,7 +206,7 @@ public class DebtControllerTests
     public void CreateDebt_Should_ReturnUnauthorized_When_AuthorizationFails()
     {
         // Arrange
-        CreateDebtDTO createDebtDto = new() { CardId = 1, Label = "New Debt", Date = DateTime.Now.AddDays(-1), Value = 150m };
+        CreateDebtDTO createDebtDto = new() { CardId = 1, Label = "New Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 150m };
         string invalidToken = "invalid_token";
 
         // Act

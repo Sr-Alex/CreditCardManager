@@ -8,7 +8,7 @@ namespace CreditCardManager.DTOs
         public int Id { get; init; }
         public int UserId { get; set; }
         public required string CardName { get; init; }
-        public DateTime ExpiresAt { get; init; }
+        public DateOnly ExpiresAt { get; init; }
         public required decimal Invoice { get; set; }
         public required decimal Limit { get; set; }
         public int PendantDebts { get; set; }
@@ -20,9 +20,9 @@ namespace CreditCardManager.DTOs
 
         public string CardName { get; set; } = "Credit Card";
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [OnlyFutureDate]
-        public DateTime ExpiresAt { get; set; } = DateTime.Now.AddDays(30);
+        public DateOnly ExpiresAt { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
 
         [Range(0, double.MaxValue, ErrorMessage = "Limit must be a positive number.")]
         public decimal Limit { get; set; } = 0.00m;

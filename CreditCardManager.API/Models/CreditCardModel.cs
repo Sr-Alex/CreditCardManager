@@ -17,12 +17,12 @@ namespace CreditCardManager.Models
         [DefaultValue("Credit Card")]
         public string CardName { get; set; } = "Credit Card";
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DefaultValue("GETDATE()")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        
-        [DataType(DataType.DateTime)]
-        public DateTime ExpiresAt { get; set; } = DateTime.Now.AddDays(30);
+        public DateOnly CreatedAt { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+        [DataType(DataType.Date)]
+        public DateOnly ExpiresAt { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
 
         [DefaultValue(0.00)]
         [DataType(DataType.Currency)]
