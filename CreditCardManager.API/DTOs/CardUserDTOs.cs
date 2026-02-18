@@ -9,6 +9,8 @@ namespace CreditCardManager.DTOs
         public required string UserName { get; set; }
         public int DebtsCount { get; set; }
         public int PendingDebts { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal AmountToPay { get; set; }
     }
 
     public record CreateCardUserDTO

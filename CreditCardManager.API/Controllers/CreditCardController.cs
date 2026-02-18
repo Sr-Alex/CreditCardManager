@@ -137,6 +137,7 @@ namespace CreditCardManager.Controllers
                 UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
                 creditCardDTO.UserId = userToken.Id;
 
+                Console.WriteLine($"Credit card Expires At: {creditCardDTO.ExpiresAt}");
                 CreditCardDTO card = _creditCardServices.CreateCreditCard(creditCardDTO);
 
                 return Created("Created", card);
@@ -170,16 +171,6 @@ namespace CreditCardManager.Controllers
             return _creditCardServices.DeleteCreditCard(id)
             ? NoContent()
             : NotFound();
-        }
-
-        public IActionResult GetCreditCards(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IActionResult AddUser(int id, string email, string token)
-        {
-            throw new NotImplementedException();
         }
     }
 }

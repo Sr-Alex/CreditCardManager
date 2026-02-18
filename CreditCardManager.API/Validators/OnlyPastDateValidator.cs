@@ -7,9 +7,9 @@ namespace CreditCardManager.Validators
     {
         public override bool IsValid(object? value)
         {
-            if (value is DateTime date)
+            if (value is DateOnly date)
             {
-                bool result = date <= DateTime.Now;
+                bool result = date <= DateOnly.FromDateTime(DateTime.Now);
                 return result;
             }
             return false;

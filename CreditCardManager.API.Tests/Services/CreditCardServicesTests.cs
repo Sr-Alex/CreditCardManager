@@ -39,7 +39,7 @@ public class CreditCardServicesTests
         {
             UserId = userId,
             CardName = cardName,
-            ExpiresAt = DateTime.Now.AddYears(1),
+            ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)),
             Limit = limit ?? DefaultLimit
         });
     }
@@ -48,11 +48,8 @@ public class CreditCardServicesTests
     public void IsUserOwnerOfCard_ShouldReturnTrue_WhenUserIsOwner()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.IsUserOwnerOfCard(card.Id, user.Id);
@@ -65,14 +62,9 @@ public class CreditCardServicesTests
     public void IsUserOwnerOfCard_ShouldReturnFalse_WhenUserIsNotOwner()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new() { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        var user1 = _userServicesMock.Create(createUserDto1);
-
-        CreateUserDTO createUserDto2 = new() { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        var user2 = _userServicesMock.Create(createUserDto2);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        var user1 = CreateTestUser("User1", "user1@example.com");
+        var user2 = CreateTestUser("User2", "user2@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
 
         // Act
         var result = _creditCardServicesMock.IsUserOwnerOfCard(card.Id, user2.Id);
@@ -85,11 +77,8 @@ public class CreditCardServicesTests
     public void IsCardUser_ShouldReturnTrue_WhenUserIsAssociated()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.IsCardUser(card.Id, user.Id);
@@ -102,11 +91,8 @@ public class CreditCardServicesTests
     public void CardIdExists_ShouldReturnTrue_WhenCardExists()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.CardIdExists(card.Id);
@@ -129,10 +115,8 @@ public class CreditCardServicesTests
     public void CreateCreditCard_ShouldCreateAndReturnCard()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        UserDTO user = CreateTestUser();
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = DefaultCardName, ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = DefaultLimit };
 
         // Act
         CreditCardDTO result = _creditCardServicesMock.CreateCreditCard(createCardDto);
@@ -146,10 +130,8 @@ public class CreditCardServicesTests
     public void DeleteCreditCard_ShouldReturnTrue_WhenCardExists()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.DeleteCreditCard(card.Id);
@@ -163,11 +145,8 @@ public class CreditCardServicesTests
     public void GetCreditCard_ShouldReturnCard_WhenExists()
     {
         // Arrange
-        CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.GetCreditCard(card.Id);
@@ -192,13 +171,9 @@ public class CreditCardServicesTests
     public void GetUserCreditCards_ShouldReturnList()
     {
         // Arrange
-        CreateUserDTO createUserDto = new CreateUserDTO { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-
-        CreateCreditCardDTO createCardDto1 = new CreateCreditCardDTO { UserId = user.Id, CardName = "Card1", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreateCreditCardDTO createCardDto2 = new CreateCreditCardDTO { UserId = user.Id, CardName = "Card2", ExpiresAt = DateTime.Now.AddYears(1), Limit = 2000.00m };
-        _creditCardServicesMock.CreateCreditCard(createCardDto1);
-        _creditCardServicesMock.CreateCreditCard(createCardDto2);
+        UserDTO user = CreateTestUser();
+        CreateTestCard(user.Id, "Card1");
+        CreateTestCard(user.Id, "Card2", 2000.00m);
 
         // Act
         var result = _creditCardServicesMock.GetUserCreditCards(user.Id);
@@ -212,10 +187,8 @@ public class CreditCardServicesTests
     public void UpdateInvoice_ShouldReturnDecimal()
     {
         // Arrange
-        CreateUserDTO createUserDto = new CreateUserDTO { UserName = "Test User", Email = "test@example.com", Password = "password" };
-        UserDTO user = _userServicesMock.Create(createUserDto);
-        CreateCreditCardDTO createCardDto = new CreateCreditCardDTO { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user = CreateTestUser();
+        CreditCardDTO card = CreateTestCard(user.Id);
 
         // Act
         var result = _creditCardServicesMock.UpdateInvoice(card.Id);
@@ -228,12 +201,9 @@ public class CreditCardServicesTests
     public void AddUser_ShouldReturnTrue_WhenUserAdded()
     {
         // Arrange
-        CreateUserDTO createUserDto1 = new CreateUserDTO { UserName = "User1", Email = "user1@example.com", Password = "password" };
-        UserDTO user1 = _userServicesMock.Create(createUserDto1);
-        CreateUserDTO createUserDto2 = new CreateUserDTO { UserName = "User2", Email = "user2@example.com", Password = "password" };
-        UserDTO user2 = _userServicesMock.Create(createUserDto2);
-        CreateCreditCardDTO createCardDto = new CreateCreditCardDTO { UserId = user1.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
-        CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
+        UserDTO user1 = CreateTestUser("User1", "user1@example.com");
+        UserDTO user2 = CreateTestUser("User2", "user2@example.com");
+        CreditCardDTO card = CreateTestCard(user1.Id);
 
         // Act
         var result = _creditCardServicesMock.AddUser(card.Id, user2.Email);

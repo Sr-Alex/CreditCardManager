@@ -36,7 +36,9 @@ namespace CreditCardManager.Services
                         UserId = cardU.u.Id,
                         UserName = cardU.u.UserName,
                         DebtsCount = d.Count(d => d.UserId == cardU.u.Id),
-                        PendingDebts = d.Count(d => d.UserId == cardU.u.Id && d.IsPaid)
+                        PendingDebts = d.Count(d => d.UserId == cardU.u.Id && !d.IsPaid),
+                        TotalAmount = d.Where(d => d.UserId == cardU.u.Id).Sum(d => d.Value),
+                        AmountToPay = d.Where(d => d.UserId == cardU.u.Id && !d.IsPaid).Sum(d => d.Value),
                     })
                 .ToList();
 

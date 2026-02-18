@@ -23,5 +23,13 @@ namespace CreditCardManager.Data
         {
             _configuration = configuration;
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
     }
 }

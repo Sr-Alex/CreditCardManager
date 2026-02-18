@@ -23,7 +23,9 @@ namespace CreditCardManager.Services
         public bool IsUserOwnerOfCard(int cardId, int userId)
         {
             CreditCardDTO? card = GetCreditCard(cardId);
-            return card != null && card.UserId == userId;
+            if (card == null) return false;
+
+            return card.UserId == userId;
         }
 
         public bool IsCardUser(int cardId, int userId)

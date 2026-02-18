@@ -29,10 +29,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
 
         // Act
         var result = _debtServicesMock.CreateDebt(createDebtDto);
@@ -47,7 +47,7 @@ public class DebtServicesTests
     public void CreateDebt_ShouldThrowException_WhenUserDoesNotExist()
     {
         // Arrange
-        CreateDebtDTO createDebtDto = new() { UserId = 999, CardId = 1, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = 999, CardId = 1, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
 
         // Act & Assert
         Assert.Throws<Exception>(() => _debtServicesMock.CreateDebt(createDebtDto));
@@ -60,7 +60,7 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = 999, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = 999, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
 
         // Act & Assert
         Assert.Throws<Exception>(() => _debtServicesMock.CreateDebt(createDebtDto));
@@ -73,10 +73,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
         _debtServicesMock.CreateDebt(createDebtDto);
 
         var debts = _debtServicesMock.GetCardDebts(card.Id);
@@ -108,11 +108,11 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto1 = new() { UserId = user.Id, CardId = card.Id, Label = "Debt1", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
-        CreateDebtDTO createDebtDto2 = new() { UserId = user.Id, CardId = card.Id, Label = "Debt2", Date = DateTime.Now.AddDays(-2), Value = 200.00m };
+        CreateDebtDTO createDebtDto1 = new() { UserId = user.Id, CardId = card.Id, Label = "Debt1", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
+        CreateDebtDTO createDebtDto2 = new() { UserId = user.Id, CardId = card.Id, Label = "Debt2", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-2)), Value = 200.00m };
         _debtServicesMock.CreateDebt(createDebtDto1);
         _debtServicesMock.CreateDebt(createDebtDto2);
 
@@ -131,7 +131,7 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
         // Act
@@ -149,10 +149,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
         _debtServicesMock.CreateDebt(createDebtDto);
 
         var debts = _debtServicesMock.GetCardDebts(card.Id);
@@ -186,10 +186,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
         _debtServicesMock.CreateDebt(createDebtDto);
 
         // Act
@@ -209,10 +209,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
         _debtServicesMock.CreateDebt(createDebtDto);
 
         var debts = _debtServicesMock.GetCardDebts(card.Id);
@@ -243,10 +243,10 @@ public class DebtServicesTests
         CreateUserDTO createUserDto = new() { UserName = "Test User", Email = "test@example.com", Password = "password" };
         UserDTO user = _userServicesMock.Create(createUserDto);
 
-        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateTime.Now.AddYears(1), Limit = 1000.00m };
+        CreateCreditCardDTO createCardDto = new() { UserId = user.Id, CardName = "Test Card", ExpiresAt = DateOnly.FromDateTime(DateTime.Now.AddYears(1)), Limit = 1000.00m };
         CreditCardDTO card = _creditCardServicesMock.CreateCreditCard(createCardDto);
 
-        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateTime.Now.AddDays(-1), Value = 100.00m };
+        CreateDebtDTO createDebtDto = new() { UserId = user.Id, CardId = card.Id, Label = "Test Debt", Date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), Value = 100.00m };
         _debtServicesMock.CreateDebt(createDebtDto);
 
         var debts = _debtServicesMock.GetCardDebts(card.Id);

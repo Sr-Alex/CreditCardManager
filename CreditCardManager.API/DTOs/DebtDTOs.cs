@@ -11,7 +11,7 @@ namespace CreditCardManager.DTOs
         public int Card { get; set; }
         public required string Label { get; set; }
         public decimal Value { get; set; }
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
         public bool IsPaid { get; set; }
     }
 
@@ -26,9 +26,9 @@ namespace CreditCardManager.DTOs
         [MaxLength(100, ErrorMessage = "Label cannot exceed 100 characters.")]
         public string Label { get; set; } = "User debt";
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [OnlyPastDate]
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
         [Required(ErrorMessage = "Value is required.")]
         [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
@@ -41,8 +41,9 @@ namespace CreditCardManager.DTOs
         [MaxLength(100, ErrorMessage = "Label cannot exceed 100 characters.")]
         public string? Label { get; set; }
 
+        [DataType(DataType.Date)]
         [OnlyPastDate]
-        public DateTime? Date { get; set; }
+        public DateOnly? Date { get; set; }
 
         [Range(1, double.MaxValue, ErrorMessage = "The Value must be greater than 0.")]
         public decimal? Value { get; set; }

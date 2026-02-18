@@ -21,9 +21,9 @@ namespace CreditCardManager.Models
         [DefaultValue("User debt")]
         public string Label { get; set; } = "User debt";
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DefaultValue("GETDATE()")]
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
         [DataType(DataType.Currency)]
         public decimal Value { get; set; }
