@@ -6,4 +6,5 @@
 CreditCardManager.API/Migrations
 
 */appsettings.Development.json
+*/appsettings.Production.json
 c:*
