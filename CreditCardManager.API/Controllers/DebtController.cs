@@ -133,14 +133,17 @@ namespace CreditCardManager.Controllers
             }
 
             int userId = _tokenServices.DecodeUserToken(Authorization).Id;
-            if (!_creditCardServices.IsUserOwnerOfCard(debt.Card, userId) || !_debtServices.IsDebtOwner(debtId, userId))
+            bool isCardOwner = _creditCardServices.IsUserOwnerOfCard(debt.Card, userId);
+            bool isDebtOwner = _debtServices.IsDebtOwner(debtId, userId);
+
+            if (!isCardOwner && !isDebtOwner)
             {
                 return Unauthorized(new { Message = "You are not authorized to pay this debt." });
             }
 
             bool result = _debtServices.PayDebt(debtId);
 
-            return result ? Ok() : BadRequest(new { Message = "Failed to pay debt." });
+            return result ? NoContent() : BadRequest(new { Message = "Failed to pay debt." });
         }
     }
 }
