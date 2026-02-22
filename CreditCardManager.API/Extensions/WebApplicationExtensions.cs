@@ -8,6 +8,8 @@ namespace CreditCardManager.Extensions
         {
             app.UseCors();
 
+            app.UseRateLimiter();
+
             app.MapControllers();
 
             app.UseHttpsRedirection();

@@ -1,10 +1,11 @@
 using System.Text;
+using System.Threading.RateLimiting;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.RateLimiting;
 
-using CreditCardManager.Data;
 using CreditCardManager.Interfaces;
 using CreditCardManager.Services;
 
@@ -14,14 +15,14 @@ namespace CreditCardManager.Extensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config.GetConnectionString("DefaultConnection");
-            var frontendUrl = config["FrontendUrl"];
+            string connectionString = config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("DefaultConnection is not configured.");
+            string frontendUrl = config["FrontendUrl"] ?? throw new InvalidOperationException("FrontendUrl is not configured.");
 
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins(frontendUrl ?? "")
+                    policy.WithOrigins(frontendUrl)
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .SetIsOriginAllowed(_ => true);
@@ -43,6 +44,22 @@ namespace CreditCardManager.Extensions
                         config["JWT:SecureKey"] ?? ""
                     ))
                 };
+            });
+
+            services.AddRateLimiter(options =>
+            {
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                {
+                    return RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: partition => new FixedWindowRateLimiterOptions
+                        {
+                            Window = TimeSpan.FromSeconds(10),
+                            PermitLimit = 5,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 2
+                        });
+                });
             });
 
             services.AddTransient<ITokenServices, TokenServices>();
