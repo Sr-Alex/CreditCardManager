@@ -8,6 +8,7 @@ namespace CreditCardManager.Interfaces
         bool IsCardUser(int cardId, int userId);
         bool CardIdExists(int cardId);
         CreditCardDTO CreateCreditCard(CreateCreditCardDTO creditCardDTO);
+        CreditCardDTO UpdateCreditCard(int id, UpdateCreditCardDTO creditCardDTO);
         bool DeleteCreditCard(int cardId);
         CreditCardDTO? GetCreditCard(int id);
         List<CreditCardDTO> GetUserCreditCards(int userId);

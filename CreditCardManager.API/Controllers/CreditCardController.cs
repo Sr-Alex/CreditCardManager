@@ -149,6 +149,30 @@ namespace CreditCardManager.Controllers
         }
 
         [Authorize]
+        [HttpPut("{id}")]
+        public IActionResult UpdateCreditCard(int id, [FromBody] UpdateCreditCardDTO creditCardDTO, [FromHeader] string Authorization)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                UserDTO userToken = _tokenServices.DecodeUserToken(Authorization);
+                if (!_creditCardServices.IsUserOwnerOfCard(id, userToken.Id))
+                    return Unauthorized(new { Message = "You are not authorized to update this credit card." });
+
+                CreditCardDTO updatedCard = _creditCardServices.UpdateCreditCard(id, creditCardDTO);
+                return Ok(updatedCard);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteCreditCard(int id, [FromHeader] string Authorization)
         {

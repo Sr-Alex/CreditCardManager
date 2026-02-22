@@ -27,4 +27,15 @@ namespace CreditCardManager.DTOs
         [Range(0, double.MaxValue, ErrorMessage = "Limit must be a positive number.")]
         public decimal Limit { get; set; } = 0.00m;
     }
+    public record UpdateCreditCardDTO
+    {
+        public string CardName { get; set; } = "Credit Card";
+
+        [DataType(DataType.Date)]
+        [OnlyFutureDate]
+        public DateOnly ExpiresAt { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+
+        [Range(0, double.MaxValue, ErrorMessage = "Limit must be a positive number.")]
+        public decimal Limit { get; set; } = 0.00m;
+    }
 }

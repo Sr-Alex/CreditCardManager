@@ -116,6 +116,21 @@ namespace CreditCardManager.Services
             return GetCreditCard(card.Entity.Id)!;
         }
 
+        public CreditCardDTO UpdateCreditCard(int id, UpdateCreditCardDTO creditCardDTO)
+        {
+            CreditCardModel? card = _context.CreditCards.FirstOrDefault(c => c.Id == id)
+                ?? throw new Exception("This Credit Card does not exist.");
+
+            card.CardName = creditCardDTO.CardName;
+            card.ExpiresAt = creditCardDTO.ExpiresAt;
+            card.Limit = creditCardDTO.Limit;
+
+            _context.CreditCards.Update(card);
+            _context.SaveChanges();
+
+            return GetCreditCard(id)!;
+        }
+
         public bool DeleteCreditCard(int cardId)
         {
             CreditCardModel? card = _context.CreditCards.FirstOrDefault(c => c.Id == cardId);
