@@ -18,6 +18,7 @@ namespace CreditCardManager.DTOs
     {
         public int UserId { get; set; }
 
+        [MaxLength(50, ErrorMessage = "CardName cannot exceed 50 characters.")]
         public string CardName { get; set; } = "Credit Card";
 
         [DataType(DataType.Date)]

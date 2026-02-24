@@ -54,10 +54,8 @@ namespace CreditCardManager.Extensions
                         partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                         factory: partition => new FixedWindowRateLimiterOptions
                         {
-                            Window = TimeSpan.FromSeconds(10),
-                            PermitLimit = 5,
-                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                            QueueLimit = 2
+                            Window = TimeSpan.FromSeconds(5),
+                            PermitLimit = 10,
                         });
                 });
             });

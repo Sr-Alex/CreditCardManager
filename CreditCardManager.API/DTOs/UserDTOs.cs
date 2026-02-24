@@ -15,6 +15,7 @@ namespace CreditCardManager.DTOs
 
     public record class CreateUserDTO
     {
+        [MaxLength(50, ErrorMessage = "UserName cannot exceed 50 characters.")]
         [Required(ErrorMessage = "UserName is required.")]
         public string UserName { get; set; } = default!;
 
